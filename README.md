@@ -204,7 +204,7 @@ No exemplo abaixo está sendo usado o [VNC Viewer](https://www.realvnc.com/pt/co
 
 A figura mostra dois containers do chrome, um sendo exibido pela porta 5901 e outro na porta 5902. No momento captura da imagem dois testes da calculadora estavam sendo executados em paralelo.
 
-![vnc_example](C:\git-hub\example-selenium-grid\images\vnc_example.png)
+![vnc_example](images/vnc_example.png)
 
 # Referências
 
