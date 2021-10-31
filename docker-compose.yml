@@ -1,0 +1,95 @@
+version: "3.8"
+services:
+  hub:
+    image: selenium/hub
+    container_name: ${HUB_ADDRESS}
+    ports:
+      - "${HUB_PORT}:${HUB_PORT}"
+    environment:
+        GRID_MAX_SESSION: 16
+        GRID_BROWSER_TIMEOUT: 300
+        GRID_TIMEOUT: 300
+        GRID_HUB_PORT: ${HUB_PORT}
+    networks:
+      - selenium-grid 
+  chrome:
+    container_name: chrome
+    extends: 
+      file: docker-compose-chrome-debug.yml
+      service: node-chrome-debug
+    ports:
+      - ${NODE_CHROME_PORT}:5555
+      - ${CHROME_VNC_PORT}:5900
+    depends_on:
+      - hub    
+  chrome-1024x768:
+    container_name: chrome-1024x768
+    extends: 
+      file: docker-compose-chrome-debug.yml
+      service: node-chrome-debug
+    ports:
+      - ${NODE_CHROME2_PORT}:5555
+      - ${CHROME2_VNC_PORT}:5900
+    depends_on:
+      - hub
+    environment:
+      SCREEN_WIDTH: 1024
+      SCREEN_HEIGHT: 768
+      NODE_APPLICATION_NAME: chrome-1024x768      
+  firefox:
+    container_name: firefox
+    image: selenium/node-firefox-debug:3.141.59
+    ports:
+      - ${NODE_FIREFOX_PORT}:5555
+      - ${FIREFOX_VNC_PORT}:5900
+    depends_on:
+      - hub
+    environment:
+      HUB_PORT_4444_TCP_ADDR: ${HUB_ADDRESS}
+      HUB_PORT_4444_TCP_PORT: ${HUB_PORT}
+      VNC_NO_PASSWORD: "true" 
+    networks:
+      - selenium-grid 
+  opera:
+    container_name: opera
+    image: selenium/node-opera-debug:3.141.59
+    ports:
+      - ${NODE_OPERA_PORT}:5555
+      - ${OPERA_VNC_PORT}:5900
+    depends_on:
+      - hub
+    environment:
+      HUB_PORT_4444_TCP_ADDR: ${HUB_ADDRESS}
+      HUB_PORT_4444_TCP_PORT: ${HUB_PORT}
+      VNC_NO_PASSWORD: "true" 
+      NODE_MAX_INSTANCES: 1
+    networks:
+      - selenium-grid    
+  calculator:
+    image: raimundogomes18/example_calculator:1.0.1
+    container_name: calculator
+    ports:
+      - ${APP_PORT}:3000 
+    networks:
+      - selenium-grid 
+    depends_on:
+      - hub
+  maven:
+    image: maven:3.8.3-jdk-8-slim
+    container_name: maven 
+    environment:
+     REMOTE_URL: http://${HUB_ADDRESS}:${HUB_PORT}/wd/hub
+     REMOTE_EXECUTION: "true"
+    networks:
+      - selenium-grid 
+    depends_on:
+      - hub 
+      - calculator
+    volumes:
+     - ./selenium-agregator:/selenium-agregator 
+     - $HOME/.m2:/root/.m2  # you can use your home .m2 cache directory that you share e.g. with your Eclipse/IDEA
+     #- m2:/root/.m2
+    command: bash -c "env && cd /selenium-agregator  && mvn clean test"
+networks:
+  selenium-grid:
+   name: selenium-grid

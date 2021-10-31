@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  node-chrome-debug:
+    image: selenium/node-chrome-debug:3.141.59
+    shm_size: 2gb
+    environment:
+      HUB_PORT_4444_TCP_ADDR:  ${HUB_ADDRESS}
+      HUB_PORT_4444_TCP_PORT: ${HUB_PORT}
+      NODE_MAX_SESSION: 5
+      NODE_MAX_INSTANCES: 5
+      VNC_NO_PASSWORD: "true" 
+    networks:
+      - selenium-grid
