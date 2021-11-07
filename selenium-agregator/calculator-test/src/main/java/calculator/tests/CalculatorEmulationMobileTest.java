@@ -1,6 +1,8 @@
 package calculator.tests;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.openqa.selenium.remote.Browser;
@@ -11,6 +13,7 @@ import core.mobile.utils.DeviceNames;
 import core.mobile.utils.MobileOptions;
 
 @Execution(ExecutionMode.CONCURRENT)
+@TestInstance(value = Lifecycle.PER_METHOD)
 class CalculatorEmulationMobileTest extends CalculatorBaseTest  {
 	
 	private static final String CHROME_BROWSER_NAME = Browser.CHROME.browserName();

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.parallel.ResourceLock;
 import org.junit.jupiter.api.parallel.Resources;
 
 @TestMethodOrder(MethodOrderer.MethodName.class)
+@Execution(ExecutionMode.SAME_THREAD)
 class ConfigurationsTest {
 	
 

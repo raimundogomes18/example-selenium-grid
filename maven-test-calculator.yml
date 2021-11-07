@@ -1,0 +1,20 @@
+version: "3.8"
+services:
+  maven:
+    image: maven:3.8.3-jdk-8-slim
+    container_name: maven 
+    environment:
+     REMOTE_URL: http://${GRID_URL_ADDRESS}:${GRID_URL_PORT}/
+     REMOTE_EXECUTION: "true"
+    networks:
+      - default 
+    volumes:
+     - ./selenium-agregator:/selenium-agregator 
+     - $HOME/.m2:/root/.m2  # you can use your home .m2 cache directory that you share e.g. with your Eclipse/IDEA
+     #- m2:/root/.m2
+    command: bash -c "env && cd ./selenium-agregator  && mvn clean test -pl calculator-test"
+    networks:
+      - ${NETWORK_NAME}
+networks:
+  selenium-grid:
+   name: ${NETWORK_NAME}

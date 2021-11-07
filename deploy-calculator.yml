@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  calculator:
+    image: raimundogomes18/example_calculator:1.0.1
+    container_name: calculator
+    ports:
+      - ${APP_PORT}:3000 
+    networks:
+      - ${NETWORK_NAME}
+
+networks:
+  selenium-grid:
+   name: ${NETWORK_NAME}
+      

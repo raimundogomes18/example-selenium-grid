@@ -3,7 +3,12 @@ package core.drivers.factory;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.api.parallel.ResourceAccessMode;
 import org.junit.jupiter.api.parallel.ResourceLock;
 import org.openqa.selenium.opera.OperaOptions;
@@ -14,6 +19,9 @@ import core.mobile.utils.DeviceMetrics;
 import core.mobile.utils.DeviceNames;
 import core.mobile.utils.MobileOptions;
 
+@Execution(ExecutionMode.CONCURRENT)
+@TestInstance(Lifecycle.PER_METHOD)
+@Disabled
 class DriverOperaFactoryTest {
 
 	private OperaOptions options;

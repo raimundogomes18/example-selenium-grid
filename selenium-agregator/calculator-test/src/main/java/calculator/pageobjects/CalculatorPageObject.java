@@ -12,8 +12,12 @@ public class CalculatorPageObject {
 
 	private WebDriver driver;
 
+	public CalculatorPageObject(AbstractDriverOptions<?> options) {
+		this.driver = new DriverBuilder().createDriver(options);
+	}
+	
 	public CalculatorPageObject(MobileOptions mobileOptions) {
-		setConfiguration(mobileOptions);
+		this.driver = new DriverBuilder().createDriver(mobileOptions);
 	}
 
 	public CalculatorPageObject() {
@@ -44,16 +48,6 @@ public class CalculatorPageObject {
 
 	public void clickBy(String xpath) {
 		driver.findElement(By.xpath(xpath)).click();
-	}
-
-	public void setConfiguration(MobileOptions options) {
-		this.driver = new DriverBuilder().createDriver(options);
-
-	}
-	
-	public void setConfiguration(AbstractDriverOptions<?> options) {
-		this.driver = new DriverBuilder().createDriver(options);
-
 	}
 
 }

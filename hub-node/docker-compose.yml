@@ -1,0 +1,61 @@
+version: "3.9"
+services:
+  hub:
+    image: selenium/hub:4.0.0
+    container_name: ${GRID_URL_ADDRESS}
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "${GRID_URL_PORT}:${GRID_URL_PORT}"
+    networks:
+      - ${NETWORK_NAME} 
+
+  firefox:
+    image: selenium/node-firefox:94.0
+    shm_size: 2gb
+    depends_on:
+      - hub
+    env_file:
+      - .env
+    ports:
+      - "${FIREFOX_VNC_PORT}:5900"
+    networks:
+      - ${NETWORK_NAME}  
+
+  edge:
+    image: selenium/node-edge:95.0
+    shm_size: 2gb
+    depends_on:
+      - hub
+    env_file:
+      - .env
+    ports:
+      - "${EDGE_VNC_PORT}:5900"
+    networks:
+      - ${NETWORK_NAME}  
+  
+  chrome:
+    extends: 
+      file: ../docker-compose-shared-chrome.yml
+      service: shared-chrome
+    ports:
+      - "${CHROME_VNC_PORT}:5900"
+    env_file:
+      - .env  
+  chrome-1024x768:
+    extends: 
+      file: ../docker-compose-shared-chrome.yml
+      service: shared-chrome
+    ports:
+      - ${CHROME_1024x768_VNC_PORT}:5900
+    environment:
+      SCREEN_WIDTH: 1024
+      SCREEN_HEIGHT: 768
+      NODE_APPLICATION_NAME: chrome-1024x768 
+    env_file:
+      - .env  
+
+networks:
+  selenium-grid:
+   name: ${NETWORK_NAME} 
+      

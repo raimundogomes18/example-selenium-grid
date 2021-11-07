@@ -1,0 +1,41 @@
+
+# Comandos de exemplo para execução com hub/node.
+
+APP_PORT=3000 NETWORK_NAME=selenium-grid docker-compose -f deploy-calculator.yml up -d
+APP_PORT=3000 NETWORK_NAME=selenium-grid docker-compose -f deploy-calculator.yml down
+
+docker-compose -f hub-node/docker-compose.yml stop
+
+docker-compose -f hub-node/docker-compose.yml up -d
+
+APP_PORT=3000 NETWORK_NAME=selenium-grid docker-compose -f deploy-calculator.yml logs
+
+docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t {{.Names}}\t {{.Ports}}"
+
+GRID_URL_ADDRESS=hub GRID_URL_PORT=4444 NETWORK_NAME=selenium-grid docker-compose -f maven-test-calculator.yml up
+
+mvn clean test -f selenium-agregator/pom.xml -Dtest=CalculatorBaseTest -DfailIfNoTests=false
+
+docker-compose  -f docker-compose.yml -f docker-compose.calculator.yml up
+
+COMPOSE_PROFILES=deploy-calculator docker-compose  -f full-grid/docker-compose.yml  up -d
+
+
+docker-compose -f docker-compose.calculator.yml up -d
+
+docker-compose -f docker-compose.maven.yml logs -f
+APP_PORT=3000 NETWORK_NAME=selenium-grid docker-compose -f deploy-calculator.yml down
+
+
+
+mvn test -f selenium-agregator/pom.xml -Dtest=CalculatorBaseTest -DfailIfNoTests=false
+mvn test -f selenium-agregator/pom.xml -Dtest=CrossBrowserTest -DfailIfNoTests=false
+mvn test  -f selenium-agregator/pom.xml -pl calculator-test
+
+docker rm -f calculator
+
+mvn test  -DfailIfNoTests=false -pl calculator-test
+
+docker container logs  maven
+
+docker container prune

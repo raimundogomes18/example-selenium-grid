@@ -6,7 +6,7 @@
 		<artifactId>selenium-agregator</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	
+
 	<artifactId>calculator-test</artifactId>
 
 	<build>
@@ -31,6 +31,16 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0-M5</version>
+				<configuration>
+					<properties>
+						<configurationParameters>
+							junit.jupiter.execution.parallel.enabled = true
+							junit.jupiter.execution.parallel.mode.default = concurrent
+							junit.jupiter.testinstance.lifecycle.default = per_method
+							junit.jupiter.execution.parallel.config.fixed.parallelism = 4
+						</configurationParameters>
+					</properties>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
