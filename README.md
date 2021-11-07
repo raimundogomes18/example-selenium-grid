@@ -156,11 +156,31 @@ A figura abaixo mostra que no momento da captura da imagem, todos os nós do sel
 
 ![vnc_example](images/vnc_example.png)
 
-Você pode executar novamente os testes repetindo o comando demonstrado mais acima ou apenas com o comando `docker start maven`. Pois o container do maven foi parado, mas ainda continua na listagem de containers.
-Pode visualizá com o comando: `docker ps -a --filter "name=maven`.
+O mapeamento das portas pode ser alterado no arquivo [hub-node/.env](/hub-node/.env).
+
+Na tabela abaixo tem o mapeamento das portas para configuração no VNC:
+|         Container      |   Porta    |  
+| -------------------    | ---------- |  
+| chome                  |   5901     |  
+| chome-1024x768         |   5902     | 
+| firefox                |   5903     |
+| edge                   |   5904     |
+
+
+Você pode executar novamente os testes repetindo o comando demonstrado mais acima ou apenas com o comando `docker start maven`. 
+
+Pois o container do maven foi parado, mas ainda continua na listagem de containers.
+Pode visualizá com o comando: 
+```
+docker ps -a --filter "name=maven"
+```
+
 ![docker_ps_a](/images/docker_ps_a_maven.png)
 
-Para visualizar o log, execute o comando: `docker container logs  maven`  
+Para visualizar o log, execute o comando: 
+```
+docker container logs  maven
+```  
 
 ### parando e removendo os container criados
 
@@ -170,6 +190,8 @@ Em seguida vamos parar os container do selenium-grid com o comando:
 ```
 docker-compose -f hub-node/docker-compose.yml stop
 ```
+
+As mensagens abaixo devem ser exibidas:
 <pre>
 Stopping hub-node_firefox_1         ... done
 Stopping hub-node_edge_1            ... done
@@ -182,12 +204,15 @@ A calculadora com o comando:
 ```
 docker-compose -f deploy-calculator.yml stop
 ```
+
+As mensagens abaixo devem ser exibidas:
 <pre>
 Stopping calculator ...        ... done
 </pre>
 
 Para remover os containers do selenium grid em definitivo: `docker-compose  -f hub-node/docker-compose.yml  down`.
 
+As mensagens abaixo devem ser exibidas:
 <pre>
 Removing hub-node_firefox_1         ... done
 Removing hub-node_edge_1            ... done
@@ -197,8 +222,12 @@ Removing hub-node_chrome_1          ... done
 Removing network selenium-grid      ... done
 </pre>
 
-Para remover o container da calculadora em definitivo: `docker-compose  -f deploy-calculator.yml  down`.
+Para remover o container da calculadora em definitivo: 
 
+```
+docker-compose  -f deploy-calculator.yml  down
+```
+As mensagens abaixo devem ser exibidas:
 <pre>
 Removing calculator ... done
 Removing network selenium-grid
@@ -219,22 +248,20 @@ PENDENTE
   3. [docker-compose file](https://docs.docker.com/compose/compose-file/)
   4. [Docker maven image](https://hub.docker.com/_/maven)
   5. [Docker selenium](https://github.com/SeleniumHQ/docker-selenium)
-  6.  [Dockerfile selenium/node-chrome-debug](https://hub.docker.com/r/selenium/node-chrome-debug/dockerfile)
   7. [Selenium grid](https://www.selenium.dev/documentation/grid/)
   8. [Componentes do grid 3](https://www.selenium.dev/pt-br/documentation/legacy/grid_3/components_of_a_grid/)
   9. [Download JDK](https://www.oracle.com/java/technologies/downloads/)
   10. [Download VNC](https://www.realvnc.com/pt/connect/download/viewer/)
-  12. [how-to-execute-testng-tests-with-maven-build](https://howtodoinjava.com/testng/how-to-execute-testng-tests-with-maven-build/)
-  13. [Repositório original do proejto calculator](https://github.com/ahfarmer/calculator)
-  14. [Repositório fork do projeto calculator](https://github.com/raimundogomes18/calculator)
-  15. [Example calculator image](https://hub.docker.com/repository/docker/raimundogomes18/example_calculator)
-  16. [mobile-emulation](https://chromedriver.chromium.org/mobile-emulation)
-  17. [devtools/device-mode](https://developer.chrome.com/docs/devtools/device-mode/)
-  18. [React](https://pt-br.reactjs.org/)
-  19. [Declare default environment variables in file](https://docs.docker.com/compose/env-file/)
-  20. [Share Compose configurations between files and projects](https://docs.docker.com/compose/extends/)
-  21. [Networking in Compose](https://docs.docker.com/compose/networking/)
-  22. [docker-compose profiles](https://docs.docker.com/compose/profiles/)
-  23. [maven](https://maven.apache.org/)
-  24. [maven-surefire-plugin](https://maven.apache.org/surefire/maven-surefire-plugin/)
-  25. [Junit 5](https://junit.org/junit5/docs/current/user-guide/)
+  11. [Repositório original do projeto calculator](https://github.com/ahfarmer/calculator)
+  12. [Repositório fork do projeto calculator](https://github.com/raimundogomes18/calculator)
+  13. [Example calculator image](https://hub.docker.com/repository/docker/raimundogomes18/example_calculator)
+  14. [mobile-emulation](https://chromedriver.chromium.org/mobile-emulation)
+  15. [devtools/device-mode](https://developer.chrome.com/docs/devtools/device-mode/)
+  16. [React](https://pt-br.reactjs.org/)
+  17. [Declare default environment variables in file](https://docs.docker.com/compose/env-file/)
+  18. [Share Compose configurations between files and projects](https://docs.docker.com/compose/extends/)
+  19. [Networking in Compose](https://docs.docker.com/compose/networking/)
+  20. [docker-compose profiles](https://docs.docker.com/compose/profiles/)
+  21. [maven](https://maven.apache.org/)
+  22. [maven-surefire-plugin](https://maven.apache.org/surefire/maven-surefire-plugin/)
+  23. [Junit 5](https://junit.org/junit5/docs/current/user-guide/)
