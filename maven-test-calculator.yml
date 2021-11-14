@@ -12,7 +12,7 @@ services:
      - ./selenium-agregator:/selenium-agregator 
      - $HOME/.m2:/root/.m2  # you can use your home .m2 cache directory that you share e.g. with your Eclipse/IDEA
      #- m2:/root/.m2
-    command: bash -c "env && cd ./selenium-agregator  && mvn clean test -pl calculator-test"
+    command: bash -c " sh selenium-agregator/scripts/run_calculator_test.sh"
     networks:
       - ${NETWORK_NAME}
 networks:

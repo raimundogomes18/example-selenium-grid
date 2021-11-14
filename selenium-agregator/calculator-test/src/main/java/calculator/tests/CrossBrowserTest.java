@@ -1,7 +1,5 @@
 package calculator.tests;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -20,9 +18,7 @@ class CrossBrowserTest extends CalculatorBaseTest {
 
 	@Test
 	void firefoxTest() {
-		CalculatorPageObject calculator = new CalculatorPageObject(new FirefoxOptions());
-
-		calculatorTest(calculator);
+		calculatorTest(new CalculatorPageObject(new FirefoxOptions()));
 	}
 
 	@Test
@@ -36,18 +32,11 @@ class CrossBrowserTest extends CalculatorBaseTest {
 
 	@Test
 	void chromeTest() {
-		CalculatorPageObject calculator = new CalculatorPageObject(new ChromeOptions());
-
-		calculatorTest(calculator);
+		calculatorTest(new CalculatorPageObject(new ChromeOptions()));
 	}
 
 	@Test
 	void edgeTest() {
-
-		CalculatorPageObject calculator = new CalculatorPageObject(new EdgeOptions());
-
-		calculatorTest(calculator);
-
+		calculatorTest(new CalculatorPageObject(new EdgeOptions()));
 	}
-
 }

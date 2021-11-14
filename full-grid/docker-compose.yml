@@ -1,106 +1,156 @@
-version: "3.9"
+version: "3.8"
 services:
-  selenium-event-bus:
+
+  event-bus:
     image: selenium/event-bus:4.0.0
-    container_name: selenium-event-bus
+    container_name: event-bus
     ports:
       - "4442:4442"
       - "4443:4443"
       - "5557:5557"
     env_file:
       - .env
+    networks:
+      - ${NETWORK_NAME}      
 
-  selenium-sessions:
+  sessions:
     image: selenium/sessions:4.0.0
-    container_name: selenium-sessions
+    container_name: sessions
     ports:
       - "5556:5556"
     depends_on:
-      - selenium-event-bus
+      - event-bus
     env_file:
       - .env
+    networks:
+      - ${NETWORK_NAME}
 
-  selenium-session-queue:
+  session-queue:
     image: selenium/session-queue:4.0.0
-    container_name: selenium-session-queue
+    container_name: session-queue
     ports:
       - "5559:5559"
     depends_on:
-      - selenium-event-bus
+      - event-bus
     env_file:
       - .env
+    networks:
+      - ${NETWORK_NAME}
 
-  selenium-distributor:
+  distributor:
     image: selenium/distributor:4.0.0
-    container_name: selenium-distributor
+    container_name: distributor
     ports:
       - "5553:5553"
     depends_on:
-      - selenium-event-bus
-      - selenium-sessions
-      - selenium-session-queue
+      - event-bus
+      - sessions
+      - session-queue
     env_file:
       - .env
+    networks:
+      - ${NETWORK_NAME}
 
-  selenium-router:
+  router:
     image: selenium/router:4.0.0
-    container_name: selenium-router
+    container_name: router
     ports:
       - "4444:4444"
     depends_on:
-      - selenium-distributor
-      - selenium-sessions
-      - selenium-session-queue
+      - distributor
+      - sessions
+      - session-queue
     env_file:
       - .env
+    networks:
+      - ${NETWORK_NAME}
+    healthcheck:
+      test:  ["CMD", "curl", "-f", "http://localhost:4444/status"]
+      interval: "60s"
+      timeout: "3s"
+      start_period: "5s"
+      retries: 3
 
   chrome:
     container_name: chrome
     extends: 
-      file: ../docker-compose-shared-chrome-full-grid.yml
+      file: ../docker-compose-shared-chrome.yml
       service: shared-chrome
     ports:
       - ${CHROME_VNC_PORT}:5900
     depends_on:
-      - selenium-event-bus    
-    environment:
-      SE_NODE_MAX_SESSIONS: 5
+      - event-bus    
+    env_file:
+      - .env
 
   chrome-1024x768:
     container_name: chrome-1024x768
     extends: 
-      file: ../docker-compose-shared-chrome-full-grid.yml
+      file: ../docker-compose-shared-chrome.yml
       service: shared-chrome
     ports:
-      - ${CHROME2_VNC_PORT}:5900
+      - ${CHROME_1024x768_VNC_PORT}:5900
     depends_on:
-      - selenium-event-bus
-  
+      - event-bus
+    environment:
+      SCREEN_WIDTH: 1024
+      SCREEN_HEIGHT: 768
+      NODE_APPLICATION_NAME: chrome-1024x768 
+    env_file:
+      - .env  
+
   edge:
     image: selenium/node-edge:95.0
     shm_size: 2gb
     depends_on:
-      - selenium-event-bus
+      - event-bus
     ports:
       - "${EDGE_VNC_PORT}:5900"
     env_file:
       - .env
+    networks:
+      - ${NETWORK_NAME}
 
   firefox:
     image: selenium/node-firefox:94.0
     shm_size: 2gb
     depends_on:
-      - selenium-event-bus
+      - event-bus
     ports:
       - "${FIREFOX_VNC_PORT}:5900"
     env_file:
       - .env
+    networks:
+      - ${NETWORK_NAME}
 
-  # calculator:
-  #   extends:
-  #     file: ../deploy-calculator.yml
-  #     service: calculator
-  #   profiles: ["deploy-calculator"]   
- 
+  calculator:
+    extends:
+      file: ../deploy-calculator.yml
+      service: calculator
+    profiles: ["deploy-app","test-app"]  
+    env_file:
+      - .env
+      - ../.env 
+    depends_on:
+     - router
+    networks:
+      - ${NETWORK_NAME}
+
+  maven:
+    extends:
+      file: ../maven-test-calculator.yml
+      service: maven
+    profiles: ["test-app"]  
+    env_file:
+      - .env
+      - ../.env
+    depends_on:
+     - calculator     
+    networks:
+      - ${NETWORK_NAME}
+
+networks:
+  selenium-grid:
+   name: ${NETWORK_NAME} 
 
     

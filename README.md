@@ -1,15 +1,17 @@
 - [Visão geral do projeto](#visão-geral-do-projeto)
 - [Pré-requisitos do sistema](#pré-requisitos-do-sistema)
 - [Selenium Grid](#selenium-grid)
-- [Solução proposta com arquitetura hub/nós](#solução-proposta-com-arquitetura-hubnós)
+- [Docker Compose](#docker-compose)
+- [Solução proposta com arquitetura hub/node](#solução-proposta-com-arquitetura-hubnode)
 - [Execução do projeto](#execução-do-projeto)
-    - [Disponilizando a aplicação](#disponilizando-a-aplicação)
+    - [Disponibilizando a aplicação](#disponibilizando-a-aplicação)
     - [Disponilizando os serviços do selenium grid](#disponilizando-os-serviços-do-selenium-grid)
     - [Execcutando os testes da aplicação](#execcutando-os-testes-da-aplicação)
     - [Acompanhando a execução com uso do VNC](#acompanhando-a-execução-com-uso-do-vnc)
     - [parando e removendo os container criados](#parando-e-removendo-os-container-criados)
 - [Detalhando o arquivo docker-compose](#detalhando-o-arquivo-docker-compose)
 - [Detalhando o projeto de testes](#detalhando-o-projeto-de-testes)
+- [Solução com arquitetura completa do selenium grid](#solução-com-arquitetura-completa-do-selenium-grid)
 - [Referências](#referências)
 
 
@@ -60,7 +62,16 @@ Para uma solução mais complexa, o selenium grid fornece uma arquitetura comple
   ![grid4](images/grid4.png)
   <center><small>Figura acima foi retirada da documentação e representa a arquitetura completa selenium do grid 4.</small></center>
 
- # Solução proposta com arquitetura hub/nós
+# Docker Compose
+
+ É uma ferramenta do docker que serve para definir e executar vários contêineres. A partir de um arquivo descrito com a linguagem de marcação [YAML](https://yaml.org/),  você configura como os containers serão criados, qual a ordem de dependências entre eles, as variáveis de ambientes, volumes que serão usados, ou até mesmo comandos que os containers devem executar. E com um único comando, você cria e inicia todos os containers/serviços a partir da configuração especificada no arquivo .yml.
+
+Todos os containers definidos dentro do arquivo YAML, por padrão, farão parte da mesma rede docker, podendo se comunicar entre eles sem nenhuma configuração adicional. Cada container será definido como um serviço dentro do arquivo .yaml do docker-compose. 
+
+Tudo isso facilita o gerenciamento do ciclo de vida dos containers. Neste projeto o docker compose foi usado para definição de todos os containers necessários para disponibilizar o selenium grid nas arquiteturas hub/node e full-grid. Além da disponibilização da aplicação sob teste e da própria execução dos testes.
+
+ # Solução proposta com arquitetura hub/node
+
 Nesta arquitetura o [HUB](https://www.selenium.dev/documentation/_print/#hub-and-nodes) faz a função dos componentes:  Router, Distributor, Session Map, New Session Queue e Event Bus. 
 
 Além do HUB, serão criados 4 nós para representar as seguintes máquinas:
@@ -82,7 +93,7 @@ Faça o clone do projeto em [https://github.com/raimundogomes18/example-selenium
 
 Abra um prompt de comando (todos os comandos listados neste projeto foram feitos usando git bash) 
 
-### Disponilizando a aplicação
+### Disponibilizando a aplicação
 Vamos começar disponibilizando a calculadora. Na pasta raiz do projeto, basta executar o comando: 
 ```
 docker-compose -f deploy-calculator.yml up -d
@@ -180,7 +191,7 @@ docker ps -a --filter "name=maven"
 Para visualizar o log, execute o comando: 
 ```
 docker container logs  maven
-```  
+```
 
 ### parando e removendo os container criados
 
@@ -240,6 +251,56 @@ Observe que a rede `selenium-grid` foi removida junto com os containers do selen
  PENDENTE
 # Detalhando o projeto de testes
 PENDENTE
+
+ # Solução com arquitetura completa do selenium grid
+
+A solução com todos os componentes do selenium grid foi disponibizada no diretório [full-grid](/full-grid/).
+
+Neste solução foi usada uma abordagem um pouco diferente da disponibilizada com a solução hub/nodes.
+
+A calculadora e o maven foram incorporados dentro do arquivo [full-grid/docker-compose.yml](full-grid/docker-compose.yml)
+
+Esta estratégia foi utilizada para abordamos outra funcionalidade de `profiles` disponibilizado no docker-compose.
+
+Basicamente consiste na criação de perfis para os containers. Os container que pertencerem a algum perfil **não** serão criados por padrão. Para que eles sejam criados, será necessário que os perfiis seja passados como parâmetro na inicialização.
+
+no nosso exemplo, foram definidos dois perfis:
+|  profile   | containers            |
+| ---------  | ------------         | 
+| deploy-app | calculadora          |
+| test-app   | calculadora e maven  |
+
+Então caso desejemos subir somente os containers do selenium-grid, basta executarmos o comando (Assumindo que você esta,ps executando os comando a partir da raiz do projeto):
+
+```
+docker-compose -f full-grid/docker-compose.yml up
+```
+Também com o deploy da calculadora:
+```
+COMPOSE_PROFILES=deploy-app docker-compose -f full-grid/docker-compose.yml up
+```
+
+```
+COMPOSE_PROFILES=test-app docker-compose -f full-grid/docker-compose.yml up
+```
+Embora no nosso exemplo não haja a necessidade, poderiamos passar mais de um `profile` como parâmetro.
+
+Outro forma de passar o perfil é com o parâmetro `--profile`.
+
+```
+docker-compose --profile=deploy-app docker-compose -f full-grid/docker-compose.yml up
+```
+Outra diferença é que com a arquitetura completa do selenium grid. O serviço hub, serão substituído, pelos serviços:
+
+| Serviços      | Descrição                            
+| --------------| -------------------------------------
+| event-bus     | Usado para enviar mensagens que podem ser recebidas assincronicamente entre os outros componentes.
+| session-queue      | Mantém uma lista de sessões recebidas que ainda não foram atribuídas a um Nó pelo Distribuidor.
+| sessions | Mantém um mapeamento entre o ID da sessão e o endereço do Nó em que a sessão está sendo executado.
+| distributor   | Responsável por manter um modelo dos locais disponíveis no `GRID` onde uma sessão pode ser executada (conhecida como "slots") e tomar quaisquer novas solicitações de sessão recebidas e atribuí-las a um slot.
+| router        | Responsável por receber toda a comunicação do grid com os clientes externos ao GRID. Seria o front-end do grid.
+
+Os nós são os mesmos usados no exemplo do hub/node.
 
 # Referências
 

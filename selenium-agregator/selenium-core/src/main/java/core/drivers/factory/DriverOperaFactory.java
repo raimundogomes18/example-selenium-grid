@@ -7,21 +7,7 @@ import org.openqa.selenium.opera.OperaOptions;
 import org.openqa.selenium.remote.AbstractDriverOptions;
 import org.openqa.selenium.remote.CapabilityType;
 
-import core.configuration.Configurations;
-import core.drivers.DriverOptionsException;
-import core.mobile.utils.MobileOptions;
-
-public class DriverOperaFactory implements DriverFactory {
-
-	@Override
-	public WebDriver createDriver(MobileOptions options) {
-		throw new DriverOptionsException("Method not implemented!");
-	}
-
-	@Override
-	public WebDriver createDriver(String deviceName) {
-		throw new DriverOptionsException("Method not implemented!");
-	}
+public class DriverOperaFactory  extends DriverAbstractFactory{
 
 	@Override
 	public WebDriver createDriver(AbstractDriverOptions<?> driverOptions) {
@@ -29,11 +15,13 @@ public class DriverOperaFactory implements DriverFactory {
 	}
 	
 	private WebDriver createDriverWithOperaOptions(OperaOptions driverOptions) {
+		
 		driverOptions.setCapability(CapabilityType.BROWSER_NAME, "operablink");
 		
-		if (Configurations.getInstance().isRemoteExecution()) {
+		if (isExecutionRemote()) {
 			return remoteDriver(driverOptions);
 		}
+		
 		return new OperaDriver(driverOptions);
 	}
 
