@@ -94,11 +94,16 @@ public class DriverBuilder {
 		if (Browser.CHROME.browserName().equalsIgnoreCase(browserName)) {
 			return new DriverChromeFactory().createDriver();
 		}
+
+		if (Browser.EDGE.browserName().equalsIgnoreCase(browserName)) {
+			return new DriverEdgeFactory().createDriver();
+		}
 		
 		if (Browser.OPERA.browserName().equalsIgnoreCase(browserName)) {
 			return new DriverOperaFactory().createDriver();
 		}
 		
-		return null;
+		throw new DriverOptionsException(
+				"Driver Name not implemented. " + browserName);
 	}
 }

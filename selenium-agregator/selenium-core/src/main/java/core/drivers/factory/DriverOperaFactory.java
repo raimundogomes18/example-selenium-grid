@@ -16,8 +16,6 @@ public class DriverOperaFactory  extends DriverAbstractFactory{
 	
 	private WebDriver createDriverWithOperaOptions(OperaOptions driverOptions) {
 		
-		driverOptions.setCapability(CapabilityType.BROWSER_NAME, "operablink");
-		
 		if (isExecutionRemote()) {
 			return remoteDriver(driverOptions);
 		}

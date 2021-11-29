@@ -6,7 +6,7 @@
 - [Execução do projeto](#execução-do-projeto)
     - [Disponibilizando a aplicação](#disponibilizando-a-aplicação)
     - [Disponilizando os serviços do selenium grid](#disponilizando-os-serviços-do-selenium-grid)
-    - [Execcutando os testes da aplicação](#execcutando-os-testes-da-aplicação)
+    - [Executando os testes da aplicação](#executando-os-testes-da-aplicação)
     - [Acompanhando a execução com uso do VNC](#acompanhando-a-execução-com-uso-do-vnc)
     - [parando e removendo os container criados](#parando-e-removendo-os-container-criados)
 - [Detalhando o arquivo docker-compose](#detalhando-o-arquivo-docker-compose)
@@ -143,7 +143,7 @@ Em seguida acesse: [http://localhost:4444/](http://localhost:4444/) para visuali
 Você deve visualizar uma imagem semelhante a abaixo:
 ![grid-console](images/grid-console.png)
 
-### Execcutando os testes da aplicação
+### Executando os testes da aplicação
 
 Para executar os testes, execute o comando:
 ```
@@ -326,3 +326,5 @@ Os nós são os mesmos usados no exemplo do hub/node.
   21. [maven](https://maven.apache.org/)
   22. [maven-surefire-plugin](https://maven.apache.org/surefire/maven-surefire-plugin/)
   23. [Junit 5](https://junit.org/junit5/docs/current/user-guide/)
+  24. [variável de ambiente power shell](https://docs.microsoft.com/pt-br/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-7.2)
+

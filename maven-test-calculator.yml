@@ -10,8 +10,8 @@ services:
       - default 
     volumes:
      - ./selenium-agregator:/selenium-agregator 
-     - $HOME/.m2:/root/.m2  # you can use your home .m2 cache directory that you share e.g. with your Eclipse/IDEA
-     #- m2:/root/.m2
+     - $HOME/.m3:/root/.m2  # Using your home .m2 cache directory 
+     #- m2:/root/.m2        #  this way an internal docker volume m2 will be created.
     command: bash -c " sh selenium-agregator/scripts/run_calculator_test.sh"
     networks:
       - ${NETWORK_NAME}
