@@ -1,6 +1,9 @@
 package calculator.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +11,8 @@ import calculator.pageobjects.CalculatorPageObject;
 import calculator.pageobjects.Constants;
 
 class CalculatorBaseTest {
+
+	private Logger logger = Logger.getLogger(getClass().getName());
 
 	@Test
 	void calculatorTest() {
@@ -18,18 +23,27 @@ class CalculatorBaseTest {
 
 	public void calculatorTest(CalculatorPageObject calculator) {
 
+		try {
 
-		calculator.acessCalculator();
+			calculator.acessCalculator();
 
-		testDivision(calculator);
+			testDivision(calculator);
 
-		testMultiplication(calculator);
+			testMultiplication(calculator);
 
-		testSum(calculator);
+			testSum(calculator);
 
-		testSubtraction(calculator);
+			testSubtraction(calculator);
 
-		calculator.close();
+		} catch (Exception e) {
+			fail("Test failed!");
+			logger.info("Test failed!");
+			
+		} finally {
+			calculator.close();
+			logger.info("browser closed!!!");
+		}
+
 	}
 
 	private void testDivision(CalculatorPageObject calculator) {

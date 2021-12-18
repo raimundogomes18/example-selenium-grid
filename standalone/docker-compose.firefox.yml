@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  browser:
+    image: selenium/standalone-firefox:95.0
+  
+  maven:
+    environment:
+     DEFAULT_BROWSER: "firefox"
+  

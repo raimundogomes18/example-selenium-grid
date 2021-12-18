@@ -23,7 +23,7 @@ public class Configurations {
 
 	public static final String URL_APP_REMOTE = "app.url.remote";
 
-	public static final String BROWSER_DEFAULT = "browser.default";
+	public static final String DEFAULT_BROWSER = "default.browser";
 
 	private Properties properties;
 	
@@ -104,7 +104,7 @@ public class Configurations {
 	}
 
 	public String getBrowserDefault() {
-		return getConfiguration(BROWSER_DEFAULT);
+		return getConfiguration(DEFAULT_BROWSER);
 		
 	}
 

@@ -2,37 +2,29 @@ version: "3.9"
 services:
   hub:
     image: selenium/hub:4.0.0
-    container_name: ${GRID_URL_ADDRESS}
+    container_name: ${SELENIUM_ADDRESS}
     ports:
       - "4442:4442"
       - "4443:4443"
-      - "${GRID_URL_PORT}:${GRID_URL_PORT}"
-    networks:
-      - ${NETWORK_NAME} 
+      - "${SELENIUM_PORT}:4444"
 
   firefox:
-    image: selenium/node-firefox:94.0
-    shm_size: 2gb
+    image: selenium/node-firefox:95.0
     depends_on:
       - hub
     env_file:
       - .env
     ports:
       - "${FIREFOX_VNC_PORT}:5900"
-    networks:
-      - ${NETWORK_NAME}  
 
   edge:
     image: selenium/node-edge:95.0
-    shm_size: 2gb
     depends_on:
       - hub
     env_file:
       - .env
     ports:
       - "${EDGE_VNC_PORT}:5900"
-    networks:
-      - ${NETWORK_NAME}  
   
   chrome:
     extends: 
@@ -42,6 +34,10 @@ services:
       - "${CHROME_VNC_PORT}:5900"
     env_file:
       - .env  
+    environment:
+      - SE_NODE_MAX_SESSIONS=10
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+          
   chrome-1024x768:
     extends: 
       file: ../docker-compose-shared-chrome.yml
@@ -54,8 +50,19 @@ services:
       NODE_APPLICATION_NAME: chrome-1024x768 
     env_file:
       - .env  
-
-networks:
-  selenium-grid:
-   name: ${NETWORK_NAME} 
+  calculator:
+    extends:
+      file: ../docker-compose-shared-calculator.yml
+      service: calculator
+  maven:
+    extends:
+      file: ../docker-compose-shared-calculator.yml
+      service: maven
+    command: bash -c " sh /scripts/run_calculator_test.sh"  
+    depends_on:
+     - calculator    
       
+volumes:
+  m2_repository:  
+    name: m2_repository  
+    external: true

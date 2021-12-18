@@ -1,5 +1,7 @@
 package calculator.tests;
 
+import java.util.logging.Logger;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -14,29 +16,41 @@ import calculator.pageobjects.CalculatorPageObject;
 
 @Execution(ExecutionMode.CONCURRENT)
 @TestInstance(Lifecycle.PER_METHOD)
-class CrossBrowserTest extends CalculatorBaseTest {
+class CrossBrowserTest  {
+
+	private Logger logger = Logger.getLogger(getClass().getName());
+
+	private CalculatorBaseTest calculatorBaseTest =  new CalculatorBaseTest();
 
 	@Test
 	void firefoxTest() {
-		calculatorTest(new CalculatorPageObject(new FirefoxOptions()));
+		logger.info("Start of test in  Firefox");
+		calculatorBaseTest.calculatorTest(new CalculatorPageObject(new FirefoxOptions()));
+		logger.info("End of test in  Firefox");
 	}
 
 	@Test
 	void chrome1024x768Test() {
+		logger.info("Start of test in  Chrome-1024x768");
 		ChromeOptions options = new ChromeOptions();
 		options.setCapability(CapabilityType.APPLICATION_NAME, "chrome-1024x768");
 		CalculatorPageObject calculator = new CalculatorPageObject(options);
 
-		calculatorTest(calculator);
+		calculatorBaseTest.calculatorTest(calculator);
+		logger.info("End of test in  Chrome-1024x768");
 	}
 
 	@Test
 	void chromeTest() {
-		calculatorTest(new CalculatorPageObject(new ChromeOptions()));
+		logger.info("Start of test in  Chrome");
+		calculatorBaseTest.calculatorTest(new CalculatorPageObject(new ChromeOptions()));
+		logger.info("End of test in  Chrome");
 	}
 
 	@Test
 	void edgeTest() {
-		calculatorTest(new CalculatorPageObject(new EdgeOptions()));
+		logger.info("Start of test in  EDGE");
+		calculatorBaseTest.calculatorTest(new CalculatorPageObject(new EdgeOptions()));
+		logger.info("End of test in  EDGE");
 	}
 }

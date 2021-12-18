@@ -1,12 +1,10 @@
-version: "3.8"
+version: "3.9"
 services:
   shared-chrome:
-    image: selenium/node-chrome:95.0
-    shm_size: 2gb
+    image: selenium/node-chrome:96.0
+    shm_size: 256m
     env_file:
       - .env
-    networks:
-      - ${NETWORK_NAME}
     environment:
-      - SE_NODE_MAX_SESSIONS=10
-      - SE_NODE_OVERRIDE_MAX_SESSIONS=true      
+      SE_NODE_MAX_SESSIONS: 10
+      SE_NODE_OVERRIDE_MAX_SESSIONS: true       

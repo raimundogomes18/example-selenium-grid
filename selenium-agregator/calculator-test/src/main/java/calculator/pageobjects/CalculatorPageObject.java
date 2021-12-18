@@ -1,5 +1,8 @@
 package calculator.pageobjects;
 
+import java.text.MessageFormat;
+import java.util.logging.Logger;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.AbstractDriverOptions;
@@ -11,6 +14,8 @@ import core.mobile.utils.MobileOptions;
 public class CalculatorPageObject {
 
 	private WebDriver driver;
+	
+	protected Logger logger = Logger.getLogger(getClass().getName());
 
 	public CalculatorPageObject(AbstractDriverOptions<?> options) {
 		this.driver = new DriverBuilder().createDriver(options);
@@ -30,6 +35,7 @@ public class CalculatorPageObject {
 	}
 
 	public void acessCalculator() {
+		logger.info(MessageFormat.format("Access app: {0}", Configurations.getInstance().getUrl()));
 		driver.get(Configurations.getInstance().getUrl());
 	}
 

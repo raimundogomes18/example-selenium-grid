@@ -9,4 +9,5 @@ bash ./scripts/wait-app.sh
 
 mvn install -DskipTests
 
-mvn test -Dtest=CalculatorBaseTest -DfailIfNoTests=false
+#mvn clean test -pl calculator-test
+mvn test -Dtest=CrossBrowserTest -DfailIfNoTests=false

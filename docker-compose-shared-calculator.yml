@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  calculator:
+    image: raimundogomes18/example_calculator:1.0.1
+    container_name: calculator
+    ports:
+      - ${APP_PORT}:3000 
+    profiles: ["deploy-app","test-app"]  
+    env_file:
+      - .env  
+
+  maven:
+    image: maven:3.8.3-jdk-11-slim
+    container_name: maven 
+    environment:
+     REMOTE_URL: http://${SELENIUM_ADDRESS}:${SELENIUM_PORT}
+     REMOTE_EXECUTION: "true"
+    volumes:
+     - ./selenium-agregator:/selenium-agregator  
+     - ./scripts:/scripts 
+     - m2_repository:/root/.m2
+     #- $HOME/.m2:/root/.m2  # Using your home .m2 cache directory
+    command: bash -c " sh /scripts/run_test_standalone.sh"
+    profiles: ["test-app"]   
+
+volumes:
+  m2_repository:  
+    name: m2_repository
+    external: true      

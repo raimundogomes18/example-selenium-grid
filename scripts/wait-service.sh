@@ -10,7 +10,7 @@ for i in $(eval echo "{1..$TIMEOUT_TRYS}")
 do
     code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
     if [ "$code" == 200 ]; then
-       echo  -e "\n Service started successfully!"
+       echo  -e "\n Service $url started successfully!"
        exit 0
     else
         sleep 10
@@ -21,5 +21,5 @@ do
     fi    
 done
 
-echo -e "### [Erro] Service started with failure"
+echo -e "### [Erro] Service $url started with failure"
 exit 1
