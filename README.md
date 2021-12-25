@@ -49,14 +49,40 @@ Selenium Grid permite a execução de scripts WebDriver em máquinas remotas (vi
 
 Então se você deseja executar [testes <i>cross browser</i>](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/Introduction) e/ou testar [responsividade](https://growhackscale.com/glossary/mobile-responsiveness) em diferentes dispositivos móveis em paralelo com vários navegadores a partir de um ponto central de forma escalável e distribuída, facilitando a execução dos testes, então Selenium Grid é um exemplo de ferramenta que pode auxliá-lo nesta tarefa.
 
-Com o selenium grid você pode optar por usar uma solução de [hub/nodes](https://www.selenium.dev/pt-br/documentation/legacy/grid_3/components_of_a_grid/) do selenium grid onde um HUB centraliza todas as requisições realizadas e distribui entre os nós (local onde os testes de fato serão executados). Conforme a figura abaixo:
+
+ O selenium grid fornece a opção de execução em três modos:
+
+**Modo standalone**, o selenium grid funciona como se todos os componentes estivessem juntos como um um único serviço. Então a mesma máquina/serviço que recebe as requisições, realiza a execução dos testes. É o modo mais simples. Usando o docker, será necessário apenas um container para iniciar o selenium grid.
+
+**Modo hub/nodes**: O HUB centraliza todas as requisições realizadas e distribui entre os nodes(nós). Os nós é onde de fato os testes de serão executados. Neste modo o HUB faz a função dos componentes: Router, Distributor, Session Map, New Session Queue e Event Bus. Estes componentes serão detalhados mais abaixo.
   ![grid](images/selenium_grid.png)
 
-Esta arquitetura acima é adequada para poucos ou um número médios de nós.
-Para uma solução mais complexa, o selenium grid fornece uma arquitetura completa de roteamento, distribuição de mensagens e gerenciamento de filas e sessões mais sofisticada que pode ser vista na [documentação oficial](https://www.selenium.dev/pt-br/documentation/grid/components_of_a_grid/) para mais detalhes.
+**Modo fully distributed**(totalmente distribuído, em tradução livre) todos os componentes do selenium grid são usados. Será detalhado mais abaixo um pouco sobre este modo por ser o mais "complexo".
 
   ![grid4](images/grid4.png)
   <center><small>Figura acima foi retirada da documentação e representa a arquitetura completa selenium do grid 4.</small></center>
+
+Os componentes do modo totalmente distribuído:
+
+**Router (Roteador):** é o ponto de entrada do grid. Este componente é responsável por receber os eventos dos clientes e enviar para os nós onde estes eventos serão executados. Neste cenário, entenda evento como: um clique de um botão, preenchimento de um campo, por exemplo.
+Session Queue (Fila de sessão): Contém uma fila com as novas sessões. Sempre que uma nova sessão chega no roteador, ele envia esta nova sessão para a fila de sessões.
+
+**Session Map (Mapa de Sessão):** Contém um mapa (sessão/nó) de todas as sessões ativas e os respectivos nós responsáveis por estas sessões.
+
+**Distributor (Distribuidor):** É responsável por ter o mapeamento de todos os nós e saber a quantidade de slots (sessões que podem ser criada) disponíveis em cada nó que pode receber uma nova requisição. Periodicamente o Distribuidor consulta a Fila de sessões e distribui para um nó que possa receber a nova sessão. logo em seguida adiciona a informação da sessão/nó no Mapa de sessões.
+
+**Event Bus (Barramento de eventos):** É o componente responsável por auxiliar na comunicação entre os componentes Nós, Distribuidor, Fila de Sessão e Mapa de Sessões. As mensagens que podem ser recebidas de forma assíncrona entre os outros componentes são feitas pelo barramento de eventos.
+
+**Node (Nó):** Neste componente é onde os testes de fato serão executados. Ele é responsável por gerenciar a quantidade de sessões que pode receber em paralelo. Quando um nó é criado, ele envia a informação com suas características para o distribuidor via barramento de eventos.
+
+O fluxo da comunicação entre os componentes quando chega uma nova sessão de um cliente será parecido com o demostrado na figura abaixo:
+
+   ![](/images/nova_sessao_grid_4.png)
+
+
+O fluxo da comunicação entre os componentes quando o cliente envia uma requisição/comando para uma sessão que já existe será semelhante com o demostrado na figura abaixo:
+
+   ![](/images/requisicao_sessao_existente.png)
 
 # Docker Compose
 
