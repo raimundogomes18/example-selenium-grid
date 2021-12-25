@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  browser:
+    hostname: ${SELENIUM_ADDRESS}
+    image: selenium/standalone-chrome:96.0
+    shm_size: 1gb
+    env_file:
+      - .env
+    ports:
+      - ${SELENIUM_PORT}:4444
+      - ${NO_VNC_PORT}:7900
+  calculator:
+    extends:
+      file: ../docker-compose-shared-calculator.yml
+      service: calculator
+  maven:
+    extends:
+      file: ../docker-compose-shared-calculator.yml
+      service: maven
+    environment:
+     DEFAULT_BROWSER: "chrome"
+    depends_on:
+     - calculator   
+volumes:
+  m2_repository:  
+    name: m2_repository
+    external: true  
+
+        

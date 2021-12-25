@@ -1,0 +1,124 @@
+version: "3.9"
+services:
+
+  event-bus:
+    image: selenium/event-bus:4.0.0
+    container_name: event-bus
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "5557:5557"
+    env_file:
+      - .env
+
+  sessions:
+    image: selenium/sessions:4.0.0
+    container_name: sessions
+    ports:
+      - "5556:5556"
+    depends_on:
+      - event-bus
+    env_file:
+      - .env
+
+  session-queue:
+    image: selenium/session-queue:4.0.0
+    container_name: session-queue
+    ports:
+      - "5559:5559"
+    depends_on:
+      - event-bus
+    env_file:
+      - .env
+
+  distributor:
+    image: selenium/distributor:4.0.0
+    container_name: distributor
+    ports:
+      - "5553:5553"
+    depends_on:
+      - event-bus
+      - sessions
+      - session-queue
+    env_file:
+      - .env
+
+  router:
+    image: selenium/router:4.0.0
+    container_name: router
+    ports:
+      - "${SELENIUM_PORT}:4444"
+    depends_on:
+      - distributor
+      - sessions
+      - session-queue
+    env_file:
+      - .env
+
+  chrome:
+    container_name: chrome
+    extends: 
+      file: ../docker-compose-shared-chrome.yml
+      service: shared-chrome
+    ports:
+      - ${CHROME_VNC_PORT}:5900
+    depends_on:
+      - event-bus    
+    env_file:
+      - .env
+    environment:
+      SE_NODE_MAX_SESSIONS: 10
+      SE_NODE_OVERRIDE_MAX_SESSIONS: true  
+
+  chrome-1024x768:
+    container_name: chrome-1024x768
+    extends: 
+      file: ../docker-compose-shared-chrome.yml
+      service: shared-chrome
+    ports:
+      - ${CHROME_1024x768_VNC_PORT}:5900
+    depends_on:
+      - event-bus
+    environment:
+      SCREEN_WIDTH: 1024
+      SCREEN_HEIGHT: 768
+      NODE_APPLICATION_NAME: chrome-1024x768 
+    env_file:
+      - .env  
+
+  edge:
+    image: selenium/node-edge:95.0
+    shm_size: 128m
+    depends_on:
+      - event-bus
+    ports:
+      - "${EDGE_VNC_PORT}:5900"
+    env_file:
+      - .env
+
+  firefox:
+    image: selenium/node-firefox:95.0
+    shm_size: 128m
+    depends_on:
+      - event-bus
+    ports:
+      - "${FIREFOX_VNC_PORT}:5900"
+    env_file:
+      - .env
+
+  calculator:
+    extends:
+      file: ../docker-compose-shared-calculator.yml
+      service: calculator
+
+  maven:
+    extends:
+      file: ../docker-compose-shared-calculator.yml
+      service: maven
+    command: bash -c "sh /scripts/run_calculator_test.sh" 
+
+volumes:
+  m2_repository:  
+    name: m2_repository 
+    external: true
+    

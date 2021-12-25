@@ -1,0 +1,13 @@
+# When executing docker run for an image that contains a browser please use the flag --shm-size=2g to use the host's shared memory.
+# https://github.com/SeleniumHQ/docker-selenium
+
+version: "3.8"
+services:
+  browser:
+    image: selenium/standalone-edge:95.0  
+
+  maven:
+    environment:
+      DEFAULT_BROWSER: "MicrosoftEdge"
+ 
+ 

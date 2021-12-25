@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.opera.OperaOptions;
 import org.openqa.selenium.remote.AbstractDriverOptions;
@@ -13,6 +14,7 @@ import org.openqa.selenium.remote.Browser;
 
 import core.configuration.Configurations;
 import core.drivers.factory.DriverChromeFactory;
+import core.drivers.factory.DriverEdgeFactory;
 import core.drivers.factory.DriverFirefoxFactory;
 import core.drivers.factory.DriverOperaFactory;
 import core.mobile.utils.MobileOptions;
@@ -22,7 +24,8 @@ public class DriverBuilder {
 	private static final List<String> SUPPORTED_BROWSERS = Arrays.asList(
 			Browser.CHROME.browserName(),
 			Browser.FIREFOX.browserName(),
-			Browser.OPERA.browserName());
+			Browser.OPERA.browserName(),
+			Browser.EDGE.browserName());
 	
 	public WebDriver createDriver(MobileOptions options) {
 	
@@ -62,6 +65,10 @@ public class DriverBuilder {
 		if (options instanceof ChromeOptions) {
 			return new DriverChromeFactory().createDriver(options);
 		}
+		
+		if (options instanceof EdgeOptions) {
+			return new DriverEdgeFactory().createDriver(options);
+		}
 
 		throw new DriverOptionsException(
 				"Driver Options not implemented. " + options.getClass().getName());
@@ -87,11 +94,16 @@ public class DriverBuilder {
 		if (Browser.CHROME.browserName().equalsIgnoreCase(browserName)) {
 			return new DriverChromeFactory().createDriver();
 		}
+
+		if (Browser.EDGE.browserName().equalsIgnoreCase(browserName)) {
+			return new DriverEdgeFactory().createDriver();
+		}
 		
 		if (Browser.OPERA.browserName().equalsIgnoreCase(browserName)) {
 			return new DriverOperaFactory().createDriver();
 		}
 		
-		return null;
+		throw new DriverOptionsException(
+				"Driver Name not implemented. " + browserName);
 	}
 }

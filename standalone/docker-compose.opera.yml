@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  browser:
+    image: selenium/standalone-opera:75.0
+    
+  maven:
+    environment:
+     DEFAULT_BROWSER: "opera"
+
+

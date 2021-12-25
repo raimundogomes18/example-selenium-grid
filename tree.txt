@@ -1,0 +1,40 @@
+
+example-selenium-grid     
+│   .env 
+│   docker-compose-shared-calculator.yml    
+|   docker-compose-shared-chrome.yml         
+|                                                        
+├───full-grid
+│       .env                           
+│       docker-compose.yml             
+│
+├───hub-node
+│       .env                            
+│       docker-compose.yml             
+│
+├───standalone               
+│       .env
+│       docker-compose.edge.yml
+│       docker-compose.firefox.yml
+│       docker-compose.opera.yml
+│       docker-compose.yml
+│
+├───selenium-agregator
+│   ├───calculator-test
+│   │   ├───src
+│   │   │   ├───main
+│   │   │   │   ├───java
+│   │   │   │   │       ├───pageobjects
+│   │   │   │   │       │       CalculatorPageObject.java
+│   │   │   │   │       └───tests
+│   │   │   │   │               CalculatorBaseTest.java             Possui os testes funcionais que serão realizados na aplicação calculadora. 
+│   │   │   │   │               CalculatorEmulationMobileTest.java  Testes que emulam a execução em dispositivos móveis com uso do chrome.
+│   │   │   │   │               CrossBrowserTest.java               Executa os testes funcionais para os navegadores chrome, firefox e edge.
+│   │   │   │   │
+│   │   │   │   └───resources
+│   │   │   │           configuration.properties    Contém as variáveis de execução do teste. 
+|   |   |   |                                       Ex.: remote_execution, browser_default, etc. 
+|   |   |   |
+│   └───selenium-core   Projeto com as classes comuns para criação e execução de todos os testes.
+
+
