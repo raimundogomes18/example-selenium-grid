@@ -115,7 +115,7 @@ services:
     extends:
       file: ../docker-compose-shared-calculator.yml
       service: maven
-    command: bash -c "sleep 60000 && sh /scripts/run_calculator_test.sh" 
+    command: bash -c "sh /scripts/run_calculator_test.sh" 
 
 volumes:
   m2_repository:  

@@ -3,30 +3,26 @@
 - [Selenium Grid](#selenium-grid)
 - [Docker Compose](#docker-compose)
 - [Solução proposta com arquitetura hub/node](#solução-proposta-com-arquitetura-hubnode)
+- [Solução com arquitetura completa do selenium grid](#solução-com-arquitetura-completa-do-selenium-grid)
 - [Execução do projeto](#execução-do-projeto)
-    - [Disponibilizando a aplicação](#disponibilizando-a-aplicação)
-    - [Disponilizando os serviços do selenium grid](#disponilizando-os-serviços-do-selenium-grid)
-    - [Executando os testes da aplicação](#executando-os-testes-da-aplicação)
+    - [Execução via Selenium GRID Standalone](#execução-via-selenium-grid-standalone)
+    - [Execução via Selenium GRID nos modos distribuídos](#execução-via-selenium-grid-nos-modos-distribuídos)
     - [Acompanhando a execução com uso do VNC](#acompanhando-a-execução-com-uso-do-vnc)
-    - [parando e removendo os container criados](#parando-e-removendo-os-container-criados)
 - [Detalhando o arquivo docker-compose](#detalhando-o-arquivo-docker-compose)
 - [Detalhando o projeto de testes](#detalhando-o-projeto-de-testes)
-- [Solução com arquitetura completa do selenium grid](#solução-com-arquitetura-completa-do-selenium-grid)
 - [Referências](#referências)
 
 
 # Visão geral do projeto
 
-Este projeto possui um exemplo de uso do selenium grid para execução de testes funcionais automatizados a partir de containers do docker com o intuito de auxiliar no aprendizado do selenium grid e do docker-compose.
+Este projeto possui exemplos de uso do selenium grid para execução de testes funcionais automatizados a partir de containers do docker com o intuito de auxiliar no aprendizado do selenium grid e do docker-compose.
 
-Uso do <b><i>[docker-compose](https://docs.docker.com/compose/)</i></b> para:
-  * Construção das arquiteturas HUB/NODES e FULL GRID do selenium grid. 
-  * Disponibilização de uma calculadora feita em [react](https://pt-br.reactjs.org/) que será o sistema sob testes.
+Aborda:
+  * Criação dos serviços do selenium grid nos modos STANDALONE, HUB/NODES e FULL GRID.
   * Execução dos testes via linha de comando a partir de uma imagem do [maven](https://maven.apache.org/).
-  * Execução de comandos e configurações do docker-compose como, por exemplo:
+  * Execução de comandos e configurações do docker-compose como por exemplo:
     * Uso de <i>profiles</i>.
-    * Reuso de arquivos com uso de <i>extends</i>.
-    * Visualização de logs
+    * Extender serviços com uso vários arquivos .yaml.
     * Externalização de variáveis.
 
 O Projeto contendo os testes da aplicação foram feitos em Java, com uso de [selenium](https://www.selenium.dev/) e  [Junit 5](https://junit.org/junit5/docs/current/user-guide/) para automação dos testes funcionais. Nele contém:
@@ -64,11 +60,35 @@ Para uma solução mais complexa, o selenium grid fornece uma arquitetura comple
 
 # Docker Compose
 
- É uma ferramenta do docker que serve para definir e executar vários contêineres. A partir de um arquivo descrito com a linguagem de marcação [YAML](https://yaml.org/),  você configura como os containers serão criados, qual a ordem de dependências entre eles, as variáveis de ambientes, volumes que serão usados, ou até mesmo comandos que os containers devem executar. E com um único comando, você cria e inicia todos os containers/serviços a partir da configuração especificada no arquivo .yml.
+ É uma ferramenta do docker que serve para definir e iniciar vários serviços em conjunto. 
+ 
+ Esta definição é feita a partir de um arquivo descrito com a linguagem de marcação YAML. Neste arquivo você pode configurar como os serviços serão criados, qual a ordem de dependências entre eles, as variáveis de ambientes, os volumes que serão usados por cada serviço, ou até mesmo comandos que os serviços devem executar na inicialização.
 
-Todos os containers definidos dentro do arquivo YAML, por padrão, farão parte da mesma rede docker, podendo se comunicar entre eles sem nenhuma configuração adicional. Cada container será definido como um serviço dentro do arquivo .yaml do docker-compose. 
+O docker-compose fornece a possibilidade de apenas partes dos serviços serem iniciados com uso de profiles(perfis). Se você definir um perfil para um serviço, ele será criado/iniciado, somente se o perfil for passado por parâmetro no comando de criação/inicialização dos serviços. No nosso exemplo foram definidos dois perfis:
+Perfil deploy-app adicionado no serviço calculadora
+Perfil test-app adicionado nos serviços calculadora e maven
 
-Tudo isso facilita o gerenciamento do ciclo de vida dos containers. Neste projeto o docker compose foi usado para definição de todos os containers necessários para disponibilizar o selenium grid nas arquiteturas hub/node e full-grid. Além da disponibilização da aplicação sob teste e da própria execução dos testes.
+
+|  profile   | containers            |
+| ---------  | ------------         | 
+| deploy-app | calculadora          |
+| test-app   | calculadora e maven  |
+
+
+Então se executar o comando padrão para criação dos serviços `docker-compose up`, os serviços da calculadora e do maven não serão criados. Apenas os componentes do selenium grid. Para criá-los será necessário passar o parâmetro profile, conforme exemplo abaixo:
+```
+docker-compose --profile=test-app up
+```
+ou
+```
+COMPOSE_PROFILES=test-app docker-compose up
+```
+
+Você pode estender serviços a fim de reusar configurações comuns entre eles. Será dado um exemplo na criação de dois nós que usam a mesma imagem do chrome(selenium/node-chrome), o mesmo número máximo de sessões(SE_NODE_MAX_SESSIONS), mas um deles foi customizado para usar uma resolução de tela diferente do padrão.
+
+Outra funcionalidade é a possibilidade de usar variáveis a partir de um arquivo externo ou a partir de variáveis de ambiente. Todas as portas e endereços serão adicionados em um arquivo .env como forma de exemplo.
+ Apenas o endereço de onde os testes devem ser executados remotamente será passado como variável de ambiente(REMOTE_URL) para o serviço do maven.
+Como uma forma de aprendizado do docker-compose, neste projeto de exemplo, todas estas funcionalidades mencionadas acima foram utilizadas.
 
  # Solução proposta com arquitetura hub/node
 
@@ -82,84 +102,89 @@ Além do HUB, serão criados 4 nós para representar as seguintes máquinas:
 
 A figura abaixo representa a solução dentro do docker com os container  do selenium grid, o container com a calculador(aplicação sob teste). E por fim um container maven que ficará responsável pela execução dos testes. Na figura, também, tem a representação das imagens que foram usadas como base para criação destes containers.
 
-![selenium_grid_docker](images/selenium_grid_docker.png)
+![selenium_grid_docker](images/hub_node_selenium_grid.png)
+
+# Solução com arquitetura completa do selenium grid
+
+A solução com todos os componentes do selenium grid foi disponibizada no diretório [full-grid](/full-grid/).
+
+
+
+Além de todos os componentes do selenium grid, a calculadora e o maven foram incorporados dentro do arquivo [full-grid/docker-compose.yml](full-grid/docker-compose.yml).
+
+Abaixo uma representação gráfica do serviços contidos no arquivo.
+![](images/selenium_full_grid_containers.png)
+
+
+
+# Execução do projeto
 
 Abaixo segue uma visão abreviada da estrutura do projeto:
 ![estrutura do projeto](/images/project_tree.png)
-
-# Execução do projeto
 
 Faça o clone do projeto em [https://github.com/raimundogomes18/example-selenium-grid](https://github.com/raimundogomes18/example-selenium-grid).
 
 Abra um prompt de comando (todos os comandos listados neste projeto foram feitos usando git bash) 
 
-### Disponibilizando a aplicação
-Vamos começar disponibilizando a calculadora. Na pasta raiz do projeto, basta executar o comando: 
+Em todos os examplos foi adicionado o uso de uma [volume externo](https://docs.docker.com/storage/volumes/#use-a-volume-with-docker-compose) para servir de cache das dependências do maven.
+Então crie o volume  m2_repository com o comando abaixo:
 ```
-docker-compose -f deploy-calculator.yml up -d
+ docker volume create m2_repository
+```
+### Execução via Selenium GRID Standalone
+
+Acesse a pasta `standalone`.
+
+Lista de comandos:
+| Comando     | Descrição
+| ------------                                 |--------------------------------------------
+| `docker-compose up -d`                       | Inicia o serviço do selenium grid com o chrome
+| `docker-compose --profile=deploy-app up -d`    | Inicia o serviço do selenium grid e a aplicação.
+| `docker-compose --profile=test-app up -d`    | Inicia o serviço do selenium grid, a aplicação e a execução do serviço do maven que executará os testes.
+| `docker-compose --profile=test-app logs maven`  | Visualiza apenas o log do serviço do maven. 
+| `docker-compose --profile=test-app logs --follow maven`  | Visualiza o log do serviço do maven e continua mostrando o log até o ctrl + C ser acionado.
+| ` docker-compose --profile=test-app down` | Destruir todos os serviço criados.
+
+Para os navegadores edge, firefox e opera foi usado o conceito de [compartilhamento/reúso de serviço entre arquivos do docker-compose](https://docs.docker.com/compose/extends/). Então para cada navegador foi criado um arquivo e nele sobrescrito:
+  * No serviço `browser` a imagem 
+  * E no serviço `maven` a variável de ambiente DEFAULT_BROWSER.
+  
+Segue exemplo para o opera:
+```
+services:
+  browser:
+    image: selenium/standalone-opera:75.0
+    
+  maven:
+    environment:
+     DEFAULT_BROWSER: "opera"
 ```
 
-Se tudo ocorrer bem a imagem da calculadora será baixada e você visualizará no final a mensagem <i>Creating calculator ... done</i>.
-
-Aguarde alguns segundos, e execute o comando  
+Comando para execução com o navegador EDGE:
 ```
-docker-compose -f deploy-calculator.yml logs
+docker-compose -f docker-compose.yml -f docker-compose.edge.yml  --profile=test-app up -d
 ```
-Você deve visualizar a mensagem <i>Compiled successfully!</i>. conforme imagem a baixo:
 
-![calculator_start](images/calculator_start.png)
-
-Em seguida acesse o navegador de sua preferência e acesse:
-[http://localhost:3000](http://localhost:3000) para visualizar a calculadora.
-
-![calculator](images/calculator.png)
-
-### Disponilizando os serviços do selenium grid
-
-Agora vamos subir os serviços do selenium grid. Execute o comando:
+Destruir os serviços:
 ```
-docker-compose -f hub-node/docker-compose.yml up -d
+docker-compose -f docker-compose.yml -f docker-compose.edge.yml  --profile=test-app down
 ```
-Este comando, na primeira vez que executado demorará um pouco mais, por que baixará todas as imagens usadas no selenium grid.
-
-No final do log, você deve visualizar umas mensagens semelhantes as abaixo:
-```
-Creating hub                        ... done
-Creating hub-node_chrome_1          ... done
-Creating hub-node_chrome-1024x768_1 ... done
-Creating hub-node_edge_1            ... done
-Creating hub-node_firefox_1         ... done
-```
-As mensagens acima indicam apenas que os containers foram criados, mas ainda levará mais alguns segundos ou minutos para a comunicação entre o hub e os nós sejam completamente estabelecidas.
-
-Você pode acompanhar o log com o comando: `docker-compose -f hub-node/docker-compose.yml logs`.
-
-No log deve aparecer, para cada nó, a mensagem <i>`Node has been added`</i>.
-
-Caso deseje visualizar somente o log de um serviço especifico, basta executar o comando `docker-compose -f hub-node/docker-compose.yml logs [serviço]`. Como por exemplo: `docker-compose -f hub-node/docker-compose.yml logs hub` para visualizar somente o log do hub.
-
-Em seguida acesse: [http://localhost:4444/](http://localhost:4444/) para visualizar o grid e os nós que foram criados.
-
-Você deve visualizar uma imagem semelhante a abaixo:
-![grid-console](images/grid-console.png)
-
-### Executando os testes da aplicação
-
-Para executar os testes, execute o comando:
-```
-GRID_URL_ADDRESS=hub GRID_URL_PORT=4444 NETWORK_NAME=selenium-grid docker-compose -f maven-test-calculator.yml up
-```
-O maven precisa saber o endereço e porta onde ele fará a execução remota. Para isso, antes do comando docker-compose foi passado os parâmetros  `GRID_URL_ADDRESS` e `GRID_URL_PORT`. O docker-compose entenderá estes parâmetros como variáveis de ambiente.
-
-Ao final da execução o log deve exibir as mensagens: <i>`BUILD SUCCESS`</i> e <i>`maven exited with code 0`</i>, conforme imagem abaixo:
-
-![maven_test-sucess](/images/maven_test_sucess.png)
+### Execução via Selenium GRID nos modos distribuídos
+Para executar no modo hub/nó ou totalmente distribuído, basta a partir da pasta executar o comando:
+`docker-compose --profile=test-app up -d`
 
 ### Acompanhando a execução com uso do VNC
 
+
 O VNC (Virtual Network Computing) é um protocolo de internet que permite a visualização de interfaces gráficas remotas através de uma conexão segura. Em outras palavras, você pode acessar  o conteúdo de outro computador remotamente, através da internet.
 
-Para acompanhar a execução dos testes que está ocorrendo de dentro dos nós do selenium grid, você pode usar uma IDE de sua preferência. 
+Os exemplos do selenium grid standalone foram configurados para [acompanhamento na porta 7900 via navegador](https://github.com/SeleniumHQ/docker-selenium#using-your-browser-no-vnc-client-is-needed). Então para acompanhar, basta acessar http://locahost:7900
+
+![](images/no_vnc.png)
+
+![](images/no_vnc_conectado.png)
+
+Para os exemplos nos modos hub/nó e distribuído, o acompanhamento foi configurado usando o [cilente vnc](https://github.com/SeleniumHQ/docker-selenium#using-a-vnc-client) que é disponibilizado na pora 5900.
 
 No exemplo abaixo está sendo usado o [VNC Viewer](https://www.realvnc.com/pt/connect/download/viewer/).
 
@@ -193,114 +218,14 @@ Para visualizar o log, execute o comando:
 docker container logs  maven
 ```
 
-### parando e removendo os container criados
 
-Primeiro vamos remover o container do maven com o comando `docker rm maven`.
-
-Em seguida vamos parar os container do selenium-grid com o comando:
-```
-docker-compose -f hub-node/docker-compose.yml stop
-```
-
-As mensagens abaixo devem ser exibidas:
-<pre>
-Stopping hub-node_firefox_1         ... done
-Stopping hub-node_edge_1            ... done
-Stopping hub-node_chrome-1024x768_1 ... done
-Stopping hub                        ... done
-Stopping hub-node_chrome_1          ... done
-</pre>
-
-A calculadora com o comando:
-```
-docker-compose -f deploy-calculator.yml stop
-```
-
-As mensagens abaixo devem ser exibidas:
-<pre>
-Stopping calculator ...        ... done
-</pre>
-
-Para remover os containers do selenium grid em definitivo: `docker-compose  -f hub-node/docker-compose.yml  down`.
-
-As mensagens abaixo devem ser exibidas:
-<pre>
-Removing hub-node_firefox_1         ... done
-Removing hub-node_edge_1            ... done
-Removing hub-node_chrome-1024x768_1 ... done
-Removing hub                        ... done
-Removing hub-node_chrome_1          ... done
-Removing network selenium-grid      ... done
-</pre>
-
-Para remover o container da calculadora em definitivo: 
-
-```
-docker-compose  -f deploy-calculator.yml  down
-```
-As mensagens abaixo devem ser exibidas:
-<pre>
-Removing calculator ... done
-Removing network selenium-grid
-WARNING: Network selenium-grid not found.
-</pre>
-
-Observe que a rede `selenium-grid` foi removida junto com os containers do selenium grid, por isso o WARNING de `not found`.  
 
 # Detalhando o arquivo docker-compose
  PENDENTE
 # Detalhando o projeto de testes
 PENDENTE
 
- # Solução com arquitetura completa do selenium grid
 
-A solução com todos os componentes do selenium grid foi disponibizada no diretório [full-grid](/full-grid/).
-
-Neste solução foi usada uma abordagem um pouco diferente da disponibilizada com a solução hub/nodes.
-
-A calculadora e o maven foram incorporados dentro do arquivo [full-grid/docker-compose.yml](full-grid/docker-compose.yml)
-
-Esta estratégia foi utilizada para abordamos outra funcionalidade de `profiles` disponibilizado no docker-compose.
-
-Basicamente consiste na criação de perfis para os containers. Os container que pertencerem a algum perfil **não** serão criados por padrão. Para que eles sejam criados, será necessário que os perfiis seja passados como parâmetro na inicialização.
-
-no nosso exemplo, foram definidos dois perfis:
-|  profile   | containers            |
-| ---------  | ------------         | 
-| deploy-app | calculadora          |
-| test-app   | calculadora e maven  |
-
-Então caso desejemos subir somente os containers do selenium-grid, basta executarmos o comando (Assumindo que você esta,ps executando os comando a partir da raiz do projeto):
-
-```
-docker-compose -f full-grid/docker-compose.yml up
-```
-Também com o deploy da calculadora:
-```
-COMPOSE_PROFILES=deploy-app docker-compose -f full-grid/docker-compose.yml up
-```
-
-```
-COMPOSE_PROFILES=test-app docker-compose -f full-grid/docker-compose.yml up
-```
-Embora no nosso exemplo não haja a necessidade, poderiamos passar mais de um `profile` como parâmetro.
-
-Outro forma de passar o perfil é com o parâmetro `--profile`.
-
-```
-docker-compose --profile=deploy-app docker-compose -f full-grid/docker-compose.yml up
-```
-Outra diferença é que com a arquitetura completa do selenium grid. O serviço hub, serão substituído, pelos serviços:
-
-| Serviços      | Descrição                            
-| --------------| -------------------------------------
-| event-bus     | Usado para enviar mensagens que podem ser recebidas assincronicamente entre os outros componentes.
-| session-queue      | Mantém uma lista de sessões recebidas que ainda não foram atribuídas a um Nó pelo Distribuidor.
-| sessions | Mantém um mapeamento entre o ID da sessão e o endereço do Nó em que a sessão está sendo executado.
-| distributor   | Responsável por manter um modelo dos locais disponíveis no `GRID` onde uma sessão pode ser executada (conhecida como "slots") e tomar quaisquer novas solicitações de sessão recebidas e atribuí-las a um slot.
-| router        | Responsável por receber toda a comunicação do grid com os clientes externos ao GRID. Seria o front-end do grid.
-
-Os nós são os mesmos usados no exemplo do hub/node.
 
 # Referências
 

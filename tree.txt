@@ -1,24 +1,31 @@
 
 example-selenium-grid     
-│   deploy-calculator.yml               Arquivo responsável por realizar o deploy da calculadora.
-|   docker-compose-shared-chrome.yml    Contém o serviço do chrome que será reutilizado pelos docker-compose 
-                                        do hub-node e full-grid, diminuindo a duplicação de código.
-|
-│   maven-test-calculator.yml           Cria o container do maven que executurá os testes em paralelo.     
+│   .env 
+│   docker-compose-shared-calculator.yml    
+|   docker-compose-shared-chrome.yml         
 |                                                        
 ├───full-grid
-│       .env                           Arquivo com as variáveis de ambiente externalizadas.
-│       docker-compose.yml             Contém a definição do serviços/containers do selenium grid.
+│       .env                           
+│       docker-compose.yml             
 │
 ├───hub-node
-│       .env                            Arquivo com as variáveis de ambiente externalizadas. Portas, endereços, nome da rede.
-│       docker-compose.yml              Contém a definição do hub e nós do selenium grid.
+│       .env                            
+│       docker-compose.yml             
+│
+├───standalone               
+│       .env
+│       docker-compose.edge.yml
+│       docker-compose.firefox.yml
+│       docker-compose.opera.yml
+│       docker-compose.yml
 │
 ├───selenium-agregator
 │   ├───calculator-test
 │   │   ├───src
 │   │   │   ├───main
 │   │   │   │   ├───java
+│   │   │   │   │       ├───pageobjects
+│   │   │   │   │       │       CalculatorPageObject.java
 │   │   │   │   │       └───tests
 │   │   │   │   │               CalculatorBaseTest.java             Possui os testes funcionais que serão realizados na aplicação calculadora. 
 │   │   │   │   │               CalculatorEmulationMobileTest.java  Testes que emulam a execução em dispositivos móveis com uso do chrome.
@@ -28,6 +35,6 @@ example-selenium-grid
 │   │   │   │           configuration.properties    Contém as variáveis de execução do teste. 
 |   |   |   |                                       Ex.: remote_execution, browser_default, etc. 
 |   |   |   |
-│   └───selenium-core   Projeto com as classes comuns para conexão e execução de todos os testes.
+│   └───selenium-core   Projeto com as classes comuns para criação e execução de todos os testes.
 
 

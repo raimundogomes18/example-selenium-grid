@@ -3,6 +3,7 @@ services:
   hub:
     image: selenium/hub:4.0.0
     container_name: ${SELENIUM_ADDRESS}
+    hostname: ${SELENIUM_ADDRESS}
     ports:
       - "4442:4442"
       - "4443:4443"
