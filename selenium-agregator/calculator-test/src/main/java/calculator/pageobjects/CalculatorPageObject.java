@@ -1,6 +1,7 @@
 package calculator.pageobjects;
 
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.logging.Logger;
 
 import org.openqa.selenium.By;
@@ -35,11 +36,13 @@ public class CalculatorPageObject {
 	}
 
 	public void acessCalculator() {
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
 		logger.info(MessageFormat.format("Access app: {0}", Configurations.getInstance().getUrl()));
 		driver.get(Configurations.getInstance().getUrl());
 	}
 
 	public String getResult() {
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 		return driver.findElement(By.xpath("//div[@class='component-display']/div")).getText();
 	}
 
@@ -53,6 +56,7 @@ public class CalculatorPageObject {
 	}
 
 	public void clickBy(String xpath) {
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 		driver.findElement(By.xpath(xpath)).click();
 	}
 
