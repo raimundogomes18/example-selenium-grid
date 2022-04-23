@@ -10,7 +10,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.api.parallel.ResourceAccessMode;
 import org.junit.jupiter.api.parallel.ResourceLock;
-import org.openqa.selenium.opera.OperaOptions;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.remote.Browser;
 
 import core.drivers.DriverOptionsException;
@@ -20,15 +20,15 @@ import core.mobile.utils.MobileOptions;
 
 @Execution(ExecutionMode.CONCURRENT)
 @TestInstance(Lifecycle.PER_METHOD)
-class DriverOperaFactoryTest {
+class DriverEdgeFactoryTest {
 
-	private OperaOptions options;
-	private DriverOperaFactory driverFactory;
+	private EdgeOptions options;
+	private DriverEdgeFactory driverFactory;
 
 	@BeforeEach
 	void setUp() throws Exception {
-		options = new OperaOptions();
-		driverFactory = new DriverOperaFactory();
+		options = new EdgeOptions();
+		driverFactory = new DriverEdgeFactory();
 	}
 
 	@Test
