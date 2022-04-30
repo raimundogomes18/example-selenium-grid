@@ -1,0 +1,44 @@
+
+#HTTP_PROXY = ENV['http_proxy']
+
+Vagrant.configure("2") do |config|
+  
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "ubuntu/bionic64"
+
+ 
+#  if Vagrant.has_plugin?("vagrant-proxyconf")
+#		config.proxy.http     = HTTP_PROXY
+#		config.proxy.https    = HTTP_PROXY
+#		config.proxy.no_proxy = "localhost,127.0.0.1,.example.com"
+#  end
+
+  config.vm.define "vagrant_jenkins" do |vagrant_jenkins|
+    vagrant_jenkins.vm.network "forwarded_port", guest: 8080, host: 8080
+	vagrant_jenkins.vm.network "forwarded_port", guest: 5900, host: 5900
+    vagrant_jenkins.vm.network "private_network", ip: "192.168.1.25"
+	
+	vagrant_jenkins.vm.synced_folder "./configs", "/configs"
+	vagrant_jenkins.vm.synced_folder "../../git", "/git"
+	
+	vagrant_jenkins.vm.provision "shell",   inline: "apt-get update"	
+
+	vagrant_jenkins.vm.provision "shell",   inline: "chmod +x /vagrant/scripts/*"
+
+    vagrant_jenkins.vm.provision "shell", 	inline: "bash /vagrant/scripts/get-docker.sh"	
+	
+	vagrant_jenkins.vm.provision "shell", 	inline: "bash /vagrant/scripts/install_docker_compose.sh"	
+
+	vagrant_jenkins.vm.provision "shell",   inline: "sudo usermod -aG docker vagrant"	
+	
+	vagrant_jenkins.vm.provision "shell",   inline: "cp /configs/daemon.json /etc/docker/ && systemctl daemon-reload && systemctl restart docker"	
+
+	vagrant_jenkins.vm.provider "virtualbox" do |v|
+		v.name = "vagrant_jenkins"
+		v.memory = 3072
+		v.cpus = 2
+    end
+	
+  end	
+	
+end

@@ -1,0 +1,10 @@
+#parameterized-trigger:2.39
+#gitlab-plugin:1.5.13
+#workflow-aggregator:2.6
+#config-file-provider:3.7.0
+#workflow-multibranch:2.22
+#test-results-analyzer:0.3.5
+
+#build-failure-analyzer:1.27.1
+
+#build-history-metrics-plugin:1.2

@@ -1,0 +1,56 @@
+#########################################################################################
+# Guia de referência: https://docs.docker.com/compose/compose-file/
+# Comparativo versão docker engine vs docker-compose file:  https://docs.docker.com/compose/compose-file/compose-versioning/
+# 
+# COMO INSTALAR JENKINS USANDO DOCKER COMPOSE  
+#   - https://dev.to/andresfmoya/install-jenkins-using-docker-compose-4cab
+#   - https://www.alura.com.br/artigos/compondo-uma-aplicacao-com-o-docker-compose
+#   - https://docs.docker.com/compose/install/#install-compose 
+# 
+# EXEMPLOS DE AGENDAMENTOS NO JENKINS:
+#    - https://www.lenar.io/jenkins-schedule-build-periodically/
+# 
+# ALTERAÇÕES PARA USO NO DOCKER TOOLBOX
+#   - CAMINHO DO VOLUME:  - /jenkins_data:/var/jenkins_home     
+#   - Deve ter uma pasta comportatilhada na na VM docker toobox deve ter o dir. jenkins_data mapeado. 
+#COMAMDOS:
+# docker-compose up -d
+# docker compose up -d --build
+# docker exec -it jenkins_exemplos bash
+#########################################################################################
+version: "3"
+services:
+  jenkins:
+    build:
+     context: ./imagem-jenkins
+     dockerfile: Dockerfile
+    image: jenkins_exemplos:1.0.0
+    user: root
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    network_mode: "bridge"
+    ports:
+      - "8181:8080"
+    container_name: jenkins_exemplos
+    volumes:
+      - ./jenkins_data:/var/jenkins_home          
+      - /var/run/docker.sock:/var/run/docker.sock
+      - m3:/root/.m2         
+  #  restart: always
+    environment:
+      # REMOTE_URL: $REMOTE_URL
+       APP_URL_REMOTE: $APP_URL_REMOTE
+       REMOTE_URL: http://${SELENIUM_ADDRESS}:${SELENIUM_PORT}
+       REMOTE_EXECUTION: "true"
+    networks:
+      - dynamic-grid_default
+volumes:
+  m3:
+   #external: true
+   
+networks:
+  dynamic-grid_default:
+    external:
+      name: dynamic-grid_default
+

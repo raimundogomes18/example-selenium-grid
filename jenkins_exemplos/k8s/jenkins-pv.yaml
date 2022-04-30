@@ -1,0 +1,16 @@
+# # PersistentVolume for Jenkins 
+# apiVersion: v1
+# kind: PersistentVolume
+# metadata:
+#   name: jenkins-pv
+#   labels:
+#     type: local
+# spec:
+#   storageClassName: manual
+#   capacity:
+#     storage: 500Mi
+#   accessModes:
+#     - ReadWriteOnce
+#   hostPath:
+#     path: /mnt/c/git-hub/example-selenium-grid/jenkins_exemplos/jenkins_data
+#     type: DirectoryOrCreate

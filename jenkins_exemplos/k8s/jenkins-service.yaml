@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jenkins
+  name: jenkins
+spec:
+  ports:
+    - name: "http-port"
+      port: 8181
+      targetPort: 8080
+  selector:
+    app: jenkins
+status:
+  loadBalancer: {}

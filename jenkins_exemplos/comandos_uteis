@@ -1,0 +1,9 @@
+#COMAMDOS DOCKER:
+# docker-compose up -d
+# docker compose up -d --build
+# docker exec -it jenkins_exemplos bash
+#docker rmi $(docker images -f "dangling=true" -q)
+
+grep   "<spec>"   jenkins/jenkins_data/jobs/**/config.xml
+
+ls -R | grep job
