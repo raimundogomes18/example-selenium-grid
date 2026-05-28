@@ -1,13 +1,13 @@
 #!/bin/bash
-# wait-for-grid.sh
+cd /scripts
 
-cd ./selenium-agregator  
+bash wait-grid.sh
 
-bash ./scripts/wait-grid.sh
+bash wait-app.sh 
 
-bash ./scripts/wait-app.sh 
+cd /selenium-agregator
 
-mvn install -DskipTests
+mvn test -Pfunctional-tests -DskipTests
 
 #mvn clean test -pl calculator-test
-mvn test -Dtest=CrossBrowserTest -DfailIfNoTests=false
+mvn test -Pfunctional-tests -Dtest=CrossBrowserTest -DfailIfNoTests=false

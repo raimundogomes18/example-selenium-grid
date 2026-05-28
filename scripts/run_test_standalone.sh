@@ -8,6 +8,6 @@ bash wait-app.sh
 
 cd /selenium-agregator  
 
-mvn package -DskipTests
+mvn test -Pfunctional-tests -DskipTests
 
-mvn test -Dtest=CalculatorBaseTest -DfailIfNoTests=false
+mvn test -Pfunctional-tests -Dtest=CalculatorBaseTest -DfailIfNoTests=false

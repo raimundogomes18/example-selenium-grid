@@ -100,7 +100,7 @@ public class Configurations {
 	}
 
 	public Boolean getHeadless() {
-		return Boolean.parseBoolean(properties.getProperty(HEADLESS));
+		return Boolean.parseBoolean(getConfiguration(HEADLESS));
 	}
 
 	public String getBrowserDefault() {

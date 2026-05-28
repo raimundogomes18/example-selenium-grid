@@ -1,8 +1,7 @@
-version: "3.9"
 services:
   browser:
     hostname: ${SELENIUM_ADDRESS}
-    image: selenium/standalone-chrome:96.0
+    image: selenium/standalone-chrome:4.18.1
     shm_size: 1gb
     env_file:
       - .env

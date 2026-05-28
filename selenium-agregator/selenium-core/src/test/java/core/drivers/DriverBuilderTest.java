@@ -2,6 +2,7 @@ package core.drivers;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.ResourceAccessMode;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.parallel.Resources;
 import org.openqa.selenium.remote.Browser;
 import org.openqa.selenium.safari.SafariOptions;
 
+import core.configuration.Configurations;
 import core.mobile.utils.DeviceMetrics;
 import core.mobile.utils.MobileOptions;
 
@@ -23,6 +25,11 @@ class DriverBuilderTest {
 	void setup() {
 		driver = new DriverBuilder();
 		options = new MobileOptions();
+	}
+
+	@AfterEach
+	void tearDown() {
+		System.clearProperty(Configurations.DEFAULT_BROWSER.replace(".", "_").toUpperCase());
 	}
 	
 	@Test
@@ -119,7 +126,7 @@ class DriverBuilderTest {
 	@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 	void testCreateBrowserNameNotSupported() {
 		
-		System.setProperty("BROWSER_DEFAULT", "safari");
+		System.setProperty(Configurations.DEFAULT_BROWSER.replace(".", "_").toUpperCase(), "safari");
 		
 		assertThrows(DriverOptionsException.class, () -> {
 			driver.getDriver();
@@ -131,10 +138,8 @@ class DriverBuilderTest {
 	@ResourceLock(value = Resources.SYSTEM_PROPERTIES, mode = ResourceAccessMode.READ_WRITE)
 	void testCreateBrowserNameEmpty() {
 		
-		System.setProperty("BROWSER_DEFAULT", "");
-		
 		assertThrows(DriverOptionsException.class, () -> {
-			driver.getDriver();
+			driver.createDriver(new MobileOptions().withBrowserName(""));
 		});
 		
 	}

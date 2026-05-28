@@ -12,7 +12,9 @@ public class DriverFirefoxFactory extends DriverAbstractFactory {
 
 	private WebDriver createDriverFirefoxOptions(FirefoxOptions options) {
 
-		options.setHeadless(Configurations.getInstance().getHeadless());
+		if (Boolean.TRUE.equals(Configurations.getInstance().getHeadless())) {
+			options.addArguments("-headless");
+		}
 
 		if (Configurations.getInstance().isRemoteExecution()) {
 			return remoteDriver(options);

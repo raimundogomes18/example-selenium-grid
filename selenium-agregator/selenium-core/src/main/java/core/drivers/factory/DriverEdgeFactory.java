@@ -13,7 +13,9 @@ public class DriverEdgeFactory extends DriverAbstractFactory {
 
 	private WebDriver createDriverEdgeOptions(EdgeOptions options) {
 
-		options.setHeadless(Configurations.getInstance().getHeadless());
+		if (Boolean.TRUE.equals(Configurations.getInstance().getHeadless())) {
+			options.addArguments("--headless=new");
+		}
  
 		if (isExecutionRemote()) {
 			return remoteDriver(options);

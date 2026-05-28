@@ -81,8 +81,10 @@ public class ChromeOptionsBuilder {
 		disableInfoBars();
 		options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
 		
-		options.setHeadless(Configurations.getInstance().getHeadless());
-		
+		if (Boolean.TRUE.equals(Configurations.getInstance().getHeadless())) {
+			options.addArguments("--headless=new");
+		}
+
 		return options;
 	}
 	
@@ -93,7 +95,7 @@ public class ChromeOptionsBuilder {
 	
 	
 	public ChromeOptionsBuilder headless() {
-		this.options.setHeadless(true);
+		this.options.addArguments("--headless=new");
 		return this;
 	}
 	

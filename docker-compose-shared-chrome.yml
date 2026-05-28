@@ -1,7 +1,6 @@
-version: "3.9"
 services:
   shared-chrome:
-    image: selenium/node-chrome:96.0
+    image: selenium/node-chrome:4.18.1
     shm_size: 256m
     env_file:
       - .env

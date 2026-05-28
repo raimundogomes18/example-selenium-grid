@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   calculator:
     image: raimundogomes18/example_calculator:1.0.1
@@ -10,7 +9,7 @@ services:
       - .env  
 
   maven:
-    image: maven:3.8.3-jdk-11-slim
+    image: maven:3.9.6-eclipse-temurin-11
     container_name: maven 
     environment:
      REMOTE_URL: http://${SELENIUM_ADDRESS}:${SELENIUM_PORT}

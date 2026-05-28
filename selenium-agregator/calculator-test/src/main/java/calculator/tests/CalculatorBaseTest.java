@@ -1,7 +1,6 @@
 package calculator.tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.logging.Logger;
 
@@ -35,10 +34,6 @@ class CalculatorBaseTest {
 
 			testSubtraction(calculator);
 
-		} catch (Exception e) {
-			fail("Test failed!");
-			logger.info("Test failed!");
-			
 		} finally {
 			calculator.close();
 			logger.info("browser closed!!!");

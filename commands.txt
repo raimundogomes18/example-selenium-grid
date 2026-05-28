@@ -1,41 +1,85 @@
 
-# Comandos de exemplo para execução com hub/node.
+# Comandos úteis para execução do projeto example-selenium-grid
+# Todos os comandos abaixo devem ser executados com Git Bash ou terminal compatível.
 
-APP_PORT=3000 NETWORK_NAME=selenium-grid docker-compose -f deploy-calculator.yml up -d
-APP_PORT=3000 NETWORK_NAME=selenium-grid docker-compose -f deploy-calculator.yml down
-
-docker-compose -f hub-node/docker-compose.yml stop
-
-docker-compose -f hub-node/docker-compose.yml up -d
-
-APP_PORT=3000 NETWORK_NAME=selenium-grid docker-compose -f deploy-calculator.yml logs
-
-docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t {{.Names}}\t {{.Ports}}"
-
-GRID_URL_ADDRESS=hub GRID_URL_PORT=4444 NETWORK_NAME=selenium-grid docker-compose -f maven-test-calculator.yml up
-
-mvn clean test -f selenium-agregator/pom.xml -Dtest=CalculatorBaseTest -DfailIfNoTests=false
-
-docker-compose  -f docker-compose.yml -f docker-compose.calculator.yml up
-
-COMPOSE_PROFILES=deploy-calculator docker-compose  -f full-grid/docker-compose.yml  up -d
+# -----------------------------------------------------------------
+# PRÉ-REQUISITO: criar o volume de cache do Maven (apenas uma vez)
+# -----------------------------------------------------------------
+docker volume create m2_repository
 
 
-docker-compose -f docker-compose.calculator.yml up -d
+# -----------------------------------------------------------------
+# STANDALONE (pasta: standalone/)
+# -----------------------------------------------------------------
 
-docker-compose -f docker-compose.maven.yml logs -f
-APP_PORT=3000 NETWORK_NAME=selenium-grid docker-compose -f deploy-calculator.yml down
+# Iniciar apenas o Selenium Grid (chrome por padrão)
+docker-compose up -d
+
+# Iniciar Grid + aplicação calculadora
+docker-compose --profile=deploy-app up -d
+
+# Iniciar Grid + aplicação + executar testes
+docker-compose --profile=test-app up -d
+
+# Acompanhar log dos testes
+docker-compose --profile=test-app logs --follow maven
+
+# Destruir serviços
+docker-compose --profile=test-app down
+
+# Executar com Firefox
+docker-compose -f docker-compose.yml -f docker-compose.firefox.yml --profile=test-app up -d
+
+# Executar com Edge
+docker-compose -f docker-compose.yml -f docker-compose.edge.yml --profile=test-app up -d
 
 
+# -----------------------------------------------------------------
+# HUB/NODE (pasta: hub-node/)
+# -----------------------------------------------------------------
+docker-compose --profile=test-app up -d
+docker-compose --profile=test-app logs --follow maven
+docker-compose --profile=test-app down
 
-mvn test -f selenium-agregator/pom.xml -Dtest=CalculatorBaseTest -DfailIfNoTests=false
-mvn test -f selenium-agregator/pom.xml -Dtest=CrossBrowserTest -DfailIfNoTests=false
-mvn test  -f selenium-agregator/pom.xml -pl calculator-test
 
-docker rm -f calculator
+# -----------------------------------------------------------------
+# FULL GRID (pasta: full-grid/)
+# -----------------------------------------------------------------
+docker-compose --profile=test-app up -d
+docker-compose --profile=test-app logs --follow maven
+docker-compose --profile=test-app down
 
-mvn test  -DfailIfNoTests=false -pl calculator-test
 
-docker container logs  maven
+# -----------------------------------------------------------------
+# MAVEN — executar testes localmente (sem Docker)
+# Requer Selenium Grid e aplicação em execução
+# -----------------------------------------------------------------
 
+# Testes unitários do selenium-core (não depende de Grid)
+mvn test -f selenium-agregator/pom.xml
+
+# Compilar projeto completo sem executar testes funcionais
+mvn test -f selenium-agregator/pom.xml -Pfunctional-tests -DskipTests
+
+# Executar teste funcional básico (requer Grid ativo)
+mvn test -f selenium-agregator/pom.xml -Pfunctional-tests -Dtest=CalculatorBaseTest -DfailIfNoTests=false
+
+# Executar testes cross browser (requer Grid com nós Chrome, Firefox e Edge)
+mvn test -f selenium-agregator/pom.xml -Pfunctional-tests -Dtest=CrossBrowserTest -DfailIfNoTests=false
+
+
+# -----------------------------------------------------------------
+# DOCKER — comandos úteis
+# -----------------------------------------------------------------
+
+# Listar containers com formatação
+docker ps --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}\t{{.Ports}}"
+
+# Reexecutar testes sem recriar containers (container maven já parado)
+docker start maven
+
+# Ver log do container maven
+docker container logs maven
+
+# Remover containers parados
 docker container prune

@@ -31,7 +31,7 @@ O Projeto contendo os testes da aplicação foram feitos em Java, com uso de [se
 * Exemplos de testes com simulação de uso de dispositivos móveis.
 * Exemplos de criação/configuração dos drivers com uso dos padrões de projeto Factory e Builder. 
 * Exemplo de externalização de variáveis em arquivo para configuração da execução remota via selenium grid ou local via Eclipse IDE ou outra IDE de preferência. 
-* Uso de [multiplos módulos do maven](https://maven.apache.org/guides/mini/guide-multiple-modules.html) para criação do projeto de testes.
+* Uso de [múltiplos módulos do maven](https://maven.apache.org/guides/mini/guide-multiple-modules.html) para criação do projeto de testes.
 * Uso do plugin <i>[maven-surefire-plugin](https://maven.apache.org/surefire/maven-surefire-plugin/)</i> para execução dos testes via linha de comando.
 
 Foi usado um código de exemplo de uma calculadora feita em react para servir como a aplicação sob testes. O projeto desta aplicação não será detalhado. Mas, nas referências, há o link para o [repositório original da aplicação](https://github.com/ahfarmer/calculator) e da imagem que consta no [docker hub](https://hub.docker.com/repository/docker/raimundogomes18/example_calculator). Você pode aproveitar, como forma de fixação do aprendizado, alterar o código para usar uma outra aplicação e usar os testes feitos para ela.
@@ -47,7 +47,7 @@ Opcional  - Uma <i>Virtual Network Computing</i> ([VNC](https://en.wikipedia.org
 
 Selenium Grid permite a execução de scripts WebDriver em máquinas remotas (virtuais ou reais) por meio de comandos de roteamento enviados pelo cliente para instâncias remotas do navegador. Seu objetivo é fornecer uma maneira fácil de executar testes em paralelo em várias máquinas. [[5]](https://www.selenium.dev/documentation/grid/)
 
-Então se você deseja executar [testes <i>cross browser</i>](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/Introduction) e/ou testar [responsividade](https://growhackscale.com/glossary/mobile-responsiveness) em diferentes dispositivos móveis em paralelo com vários navegadores a partir de um ponto central de forma escalável e distribuída, facilitando a execução dos testes, então Selenium Grid é um exemplo de ferramenta que pode auxliá-lo nesta tarefa.
+Então se você deseja executar [testes <i>cross browser</i>](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/Introduction) e/ou testar [responsividade](https://growhackscale.com/glossary/mobile-responsiveness) em diferentes dispositivos móveis em paralelo com vários navegadores a partir de um ponto central de forma escalável e distribuída, facilitando a execução dos testes, então Selenium Grid é um exemplo de ferramenta que pode auxiliá-lo nesta tarefa.
 
 
  O selenium grid fornece a opção de execução em três modos:
@@ -126,7 +126,7 @@ Além do HUB, serão criados 4 nós para representar as seguintes máquinas:
   3. Com o  Firefox
   4. E um nó com o navegador Edge.
 
-A figura abaixo representa a solução dentro do docker com os container  do selenium grid, o container com a calculador(aplicação sob teste). E por fim um container maven que ficará responsável pela execução dos testes. Na figura, também, tem a representação das imagens que foram usadas como base para criação destes containers.
+A figura abaixo representa a solução dentro do docker com os containers do selenium grid, o container com a calculadora (aplicação sob teste). E por fim um container maven que ficará responsável pela execução dos testes. Na figura, também, tem a representação das imagens que foram usadas como base para criação destes containers.
 
 ![selenium_grid_docker](images/hub_node_selenium_grid.png)
 
@@ -152,11 +152,25 @@ Faça o clone do projeto em [https://github.com/raimundogomes18/example-selenium
 
 Abra um prompt de comando (todos os comandos listados neste projeto foram feitos usando git bash) 
 
-Em todos os examplos foi adicionado o uso de uma [volume externo](https://docs.docker.com/storage/volumes/#use-a-volume-with-docker-compose) para servir de cache das dependências do maven.
+Em todos os exemplos foi adicionado o uso de um [volume externo](https://docs.docker.com/storage/volumes/#use-a-volume-with-docker-compose) para servir de cache das dependências do maven.
 Então crie o volume  m2_repository com o comando abaixo:
 ```
  docker volume create m2_repository
 ```
+
+### Execução dos testes via Maven
+
+O projeto Maven fica no diretório `selenium-agregator` e possui dois fluxos principais:
+
+| Comando     | Descrição |
+| ------------ | ---------- |
+| `mvn test` | Executa apenas os testes unitários do módulo `selenium-core`. Este comando não depende de Selenium Grid ativo. |
+| `mvn test -Pfunctional-tests -DskipTests` | Compila também o módulo `calculator-test`, sem executar os testes funcionais. Útil para validar se o projeto completo compila. |
+| `mvn test -Pfunctional-tests -Dtest=CalculatorBaseTest -DfailIfNoTests=false` | Executa o teste funcional básico da calculadora. Exige Selenium Grid e aplicação disponíveis. |
+| `mvn test -Pfunctional-tests -Dtest=CrossBrowserTest -DfailIfNoTests=false` | Executa os testes funcionais cross browser. Exige Selenium Grid com nós compatíveis disponíveis. |
+
+Os testes funcionais ficam separados pelo profile `functional-tests` para evitar que uma execução simples de `mvn test` falhe quando o Selenium Grid não estiver iniciado.
+
 ### Execução via Selenium GRID Standalone
 
 Acesse a pasta `standalone`.
@@ -169,7 +183,7 @@ Lista de comandos:
 | `docker-compose --profile=test-app up -d`    | Inicia o serviço do selenium grid, a aplicação e a execução do serviço do maven que executará os testes.
 | `docker-compose --profile=test-app logs maven`  | Visualiza apenas o log do serviço do maven. 
 | `docker-compose --profile=test-app logs --follow maven`  | Visualiza o log do serviço do maven e continua mostrando o log até o ctrl + C ser acionado.
-| ` docker-compose --profile=test-app down` | Destruir todos os serviço criados.
+| `docker-compose --profile=test-app down` | Destrói todos os serviços criados.
 
 Para os navegadores edge, firefox e opera foi usado o conceito de [compartilhamento/reúso de serviço entre arquivos do docker-compose](https://docs.docker.com/compose/extends/). Então para cada navegador foi criado um arquivo e nele sobrescrito:
   * No serviço `browser` a imagem 
@@ -204,13 +218,13 @@ Para executar no modo hub/nó ou totalmente distribuído, basta a partir da past
 
 O VNC (Virtual Network Computing) é um protocolo de internet que permite a visualização de interfaces gráficas remotas através de uma conexão segura. Em outras palavras, você pode acessar  o conteúdo de outro computador remotamente, através da internet.
 
-Os exemplos do selenium grid standalone foram configurados para [acompanhamento na porta 7900 via navegador](https://github.com/SeleniumHQ/docker-selenium#using-your-browser-no-vnc-client-is-needed). Então para acompanhar, basta acessar http://locahost:7900
+Os exemplos do selenium grid standalone foram configurados para [acompanhamento na porta 7900 via navegador](https://github.com/SeleniumHQ/docker-selenium#using-your-browser-no-vnc-client-is-needed). Então para acompanhar, basta acessar http://localhost:7900
 
 ![](images/no_vnc.png)
 
 ![](images/no_vnc_conectado.png)
 
-Para os exemplos nos modos hub/nó e distribuído, o acompanhamento foi configurado usando o [cilente vnc](https://github.com/SeleniumHQ/docker-selenium#using-a-vnc-client) que é disponibilizado na pora 5900.
+Para os exemplos nos modos hub/nó e distribuído, o acompanhamento foi configurado usando o [cliente vnc](https://github.com/SeleniumHQ/docker-selenium#using-a-vnc-client), que é disponibilizado na porta 5900.
 
 No exemplo abaixo está sendo usado o [VNC Viewer](https://www.realvnc.com/pt/connect/download/viewer/).
 
@@ -223,8 +237,8 @@ O mapeamento das portas pode ser alterado no arquivo [hub-node/.env](/hub-node/.
 Na tabela abaixo tem o mapeamento das portas para configuração no VNC:
 |         Container      |   Porta    |  
 | -------------------    | ---------- |  
-| chome                  |   5901     |  
-| chome-1024x768         |   5902     | 
+| chrome                 |   5901     |  
+| chrome-1024x768        |   5902     | 
 | firefox                |   5903     |
 | edge                   |   5904     |
 
@@ -232,7 +246,7 @@ Na tabela abaixo tem o mapeamento das portas para configuração no VNC:
 Você pode executar novamente os testes repetindo o comando demonstrado mais acima ou apenas com o comando `docker start maven`. 
 
 Pois o container do maven foi parado, mas ainda continua na listagem de containers.
-Pode visualizá com o comando: 
+Pode visualizá-lo com o comando: 
 ```
 docker ps -a --filter "name=maven"
 ```
@@ -247,9 +261,60 @@ docker container logs  maven
 
 
 # Detalhando o arquivo docker-compose
- PENDENTE
+O projeto usa arquivos Compose separados para demonstrar os três modos de execução do Selenium Grid:
+
+| Diretório/arquivo | Objetivo |
+| ----------------- | -------- |
+| `standalone/docker-compose.yml` | Sobe um Selenium Grid em modo standalone usando Chrome por padrão. |
+| `standalone/docker-compose.firefox.yml` | Sobrescreve o serviço `browser` para usar Firefox. |
+| `standalone/docker-compose.edge.yml` | Sobrescreve o serviço `browser` para usar Edge. |
+| `standalone/docker-compose.opera.yml` | Sobrescreve o serviço `browser` para usar Opera. |
+| `hub-node/docker-compose.yml` | Sobe a arquitetura hub/node com nós Chrome, Firefox e Edge. |
+| `full-grid/docker-compose.yml` | Sobe os componentes separados do Selenium Grid: event-bus, sessions, session-queue, distributor, router e nodes. |
+| `docker-compose-shared-calculator.yml` | Define os serviços reutilizados da calculadora e do Maven. |
+| `docker-compose-shared-chrome.yml` | Define a configuração comum dos nós Chrome. |
+
+Os serviços `calculator` e `maven` usam profiles para controlar quando entram na execução:
+
+| Profile | Serviços criados | Uso |
+| ------- | ---------------- | --- |
+| `deploy-app` | `calculator` | Sobe apenas a aplicação usada como alvo dos testes. |
+| `test-app` | `calculator` e `maven` | Sobe a aplicação e executa os testes pelo container Maven. |
+
+Cada arquitetura possui seu próprio arquivo `.env`, com um `.env.example` correspondente:
+
+| Arquivo | Uso |
+| ------- | --- |
+| `.env.example` | Variáveis compartilhadas por arquivos Compose na raiz. |
+| `standalone/.env.example` | Portas e endereço do Grid standalone. |
+| `hub-node/.env.example` | Portas do hub, VNC e variáveis dos nós. |
+| `full-grid/.env.example` | Endereços dos componentes internos do Grid distribuído. |
+
+Para preparar um ambiente novo, copie o exemplo correspondente para `.env` dentro do diretório que será executado e ajuste as portas, se necessário.
 # Detalhando o projeto de testes
-PENDENTE
+O projeto de testes fica no diretório `selenium-agregator` e é dividido em dois módulos Maven:
+
+| Módulo | Responsabilidade |
+| ------ | ---------------- |
+| `selenium-core` | Contém a base de configuração, criação de drivers, factories, builders e utilitários de emulação mobile. |
+| `calculator-test` | Contém os testes funcionais da calculadora, usando Page Object e JUnit 5. |
+
+Por padrão, o agregador Maven executa apenas o módulo `selenium-core`. Isso permite rodar `mvn test` para validar a base do projeto sem depender de Docker, Selenium Grid ou navegador remoto.
+
+O módulo `calculator-test` é incluído quando o profile `functional-tests` é informado. Este módulo depende da aplicação `calculator` e de um endpoint Selenium remoto configurado por `remote.url` ou pela variável de ambiente `REMOTE_URL`.
+
+As configurações principais ficam nos arquivos `configuration.properties`:
+
+| Propriedade | Descrição |
+| ----------- | --------- |
+| `default.browser` | Navegador padrão usado quando o teste não informa opções específicas. |
+| `remote.execution` | Define se a execução será remota via Selenium Grid. |
+| `remote.url` | URL do Selenium Grid usada para criar sessões remotas. |
+| `app.url.local` | URL da aplicação quando a execução é local. |
+| `app.url.remote` | URL da aplicação quando os testes rodam dentro da rede Docker. |
+| `headless` | Define se o navegador deve rodar em modo headless. |
+
+As variáveis de ambiente sobrescrevem as propriedades do arquivo. Por exemplo, `REMOTE_URL` sobrescreve `remote.url`, e `DEFAULT_BROWSER` sobrescreve `default.browser`.
 
 
 
@@ -278,4 +343,3 @@ PENDENTE
   22. [maven-surefire-plugin](https://maven.apache.org/surefire/maven-surefire-plugin/)
   23. [Junit 5](https://junit.org/junit5/docs/current/user-guide/)
   24. [variável de ambiente power shell](https://docs.microsoft.com/pt-br/powershell/module/microsoft.powershell.core/about/about_environment_variables?view=powershell-7.2)
-

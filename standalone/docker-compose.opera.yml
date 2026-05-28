@@ -1,10 +1,12 @@
-version: "3.8"
+# ATENÇÃO: O Opera não é mais suportado oficialmente pelo Selenium 4.3+.
+# Este arquivo é mantido apenas para referência histórica.
+# Use standalone-chrome, standalone-firefox ou standalone-edge.
+
 services:
   browser:
-    image: selenium/standalone-opera:75.0
-    
+    image: selenium/standalone-chrome:4.18.1
+
   maven:
     environment:
-     DEFAULT_BROWSER: "opera"
-
+     DEFAULT_BROWSER: "chrome"
 

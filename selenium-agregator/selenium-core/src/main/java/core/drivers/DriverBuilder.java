@@ -8,7 +8,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.opera.OperaOptions;
 import org.openqa.selenium.remote.AbstractDriverOptions;
 import org.openqa.selenium.remote.Browser;
 
@@ -16,7 +15,6 @@ import core.configuration.Configurations;
 import core.drivers.factory.DriverChromeFactory;
 import core.drivers.factory.DriverEdgeFactory;
 import core.drivers.factory.DriverFirefoxFactory;
-import core.drivers.factory.DriverOperaFactory;
 import core.mobile.utils.MobileOptions;
 
 public class DriverBuilder {
@@ -24,7 +22,6 @@ public class DriverBuilder {
 	private static final List<String> SUPPORTED_BROWSERS = Arrays.asList(
 			Browser.CHROME.browserName(),
 			Browser.FIREFOX.browserName(),
-			Browser.OPERA.browserName(),
 			Browser.EDGE.browserName());
 	
 	public WebDriver createDriver(MobileOptions options) {
@@ -56,10 +53,6 @@ public class DriverBuilder {
 		
 		if (options instanceof FirefoxOptions) {
 			return new DriverFirefoxFactory().createDriver(options);
-		}
-
-		if (options instanceof OperaOptions) {
-			return new DriverOperaFactory().createDriver(options);
 		}
 
 		if (options instanceof ChromeOptions) {
@@ -97,10 +90,6 @@ public class DriverBuilder {
 
 		if (Browser.EDGE.browserName().equalsIgnoreCase(browserName)) {
 			return new DriverEdgeFactory().createDriver();
-		}
-		
-		if (Browser.OPERA.browserName().equalsIgnoreCase(browserName)) {
-			return new DriverOperaFactory().createDriver();
 		}
 		
 		throw new DriverOptionsException(

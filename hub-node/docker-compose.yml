@@ -1,7 +1,6 @@
-version: "3.9"
 services:
   hub:
-    image: selenium/hub:4.0.0
+    image: selenium/hub:4.18.1
     container_name: ${SELENIUM_ADDRESS}
     hostname: ${SELENIUM_ADDRESS}
     ports:
@@ -10,7 +9,7 @@ services:
       - "${SELENIUM_PORT}:4444"
 
   firefox:
-    image: selenium/node-firefox:95.0
+    image: selenium/node-firefox:4.18.1
     depends_on:
       - hub
     env_file:
@@ -19,7 +18,7 @@ services:
       - "${FIREFOX_VNC_PORT}:5900"
 
   edge:
-    image: selenium/node-edge:95.0
+    image: selenium/node-edge:4.18.1
     depends_on:
       - hub
     env_file:
@@ -28,29 +27,33 @@ services:
       - "${EDGE_VNC_PORT}:5900"
   
   chrome:
-    extends: 
+    extends:
       file: ../docker-compose-shared-chrome.yml
       service: shared-chrome
+    depends_on:
+      - hub
     ports:
       - "${CHROME_VNC_PORT}:5900"
     env_file:
-      - .env  
+      - .env
     environment:
       - SE_NODE_MAX_SESSIONS=10
       - SE_NODE_OVERRIDE_MAX_SESSIONS=true
-          
+
   chrome-1024x768:
-    extends: 
+    extends:
       file: ../docker-compose-shared-chrome.yml
       service: shared-chrome
+    depends_on:
+      - hub
     ports:
       - ${CHROME_1024x768_VNC_PORT}:5900
     environment:
       SCREEN_WIDTH: 1024
       SCREEN_HEIGHT: 768
-      NODE_APPLICATION_NAME: chrome-1024x768 
+      NODE_APPLICATION_NAME: chrome-1024x768
     env_file:
-      - .env  
+      - .env
   calculator:
     extends:
       file: ../docker-compose-shared-calculator.yml

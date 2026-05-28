@@ -1,8 +1,7 @@
-version: "3.9"
 services:
 
   event-bus:
-    image: selenium/event-bus:4.0.0
+    image: selenium/event-bus:4.18.1
     container_name: event-bus
     ports:
       - "4442:4442"
@@ -12,7 +11,7 @@ services:
       - .env
 
   sessions:
-    image: selenium/sessions:4.0.0
+    image: selenium/sessions:4.18.1
     container_name: sessions
     ports:
       - "5556:5556"
@@ -22,7 +21,7 @@ services:
       - .env
 
   session-queue:
-    image: selenium/session-queue:4.0.0
+    image: selenium/session-queue:4.18.1
     container_name: session-queue
     ports:
       - "5559:5559"
@@ -32,7 +31,7 @@ services:
       - .env
 
   distributor:
-    image: selenium/distributor:4.0.0
+    image: selenium/distributor:4.18.1
     container_name: distributor
     ports:
       - "5553:5553"
@@ -44,7 +43,7 @@ services:
       - .env
 
   router:
-    image: selenium/router:4.0.0
+    image: selenium/router:4.18.1
     container_name: router
     ports:
       - "${SELENIUM_PORT}:4444"
@@ -87,7 +86,7 @@ services:
       - .env  
 
   edge:
-    image: selenium/node-edge:95.0
+    image: selenium/node-edge:4.18.1
     shm_size: 128m
     depends_on:
       - event-bus
@@ -97,7 +96,7 @@ services:
       - .env
 
   firefox:
-    image: selenium/node-firefox:95.0
+    image: selenium/node-firefox:4.18.1
     shm_size: 128m
     depends_on:
       - event-bus
@@ -115,7 +114,10 @@ services:
     extends:
       file: ../docker-compose-shared-calculator.yml
       service: maven
-    command: bash -c "sh /scripts/run_calculator_test.sh" 
+    command: bash -c "sh /scripts/run_calculator_test.sh"
+    depends_on:
+      - calculator
+      - router
 
 volumes:
   m2_repository:  

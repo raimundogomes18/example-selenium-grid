@@ -10,7 +10,9 @@
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
+# IDE files
 .vscode/
+.idea/
 README copy.md
 
 # Package Files #
@@ -29,10 +31,11 @@ target/
 .metadata
 bin
 
-.vscode/
-
 **/.factorypath
 
+# Environment variable files — copie o .env.example e renomeie para .env
+.env
+**/.env
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
