@@ -19,14 +19,20 @@ import core.mobile.utils.MobileOptions;
 
 public class DriverBuilder {
 	
+	// Edge não suporta emulação mobile via MobileOptions (recurso exclusivo do Chrome).
 	private static final List<String> SUPPORTED_BROWSERS = Arrays.asList(
 			Browser.CHROME.browserName(),
 			Browser.FIREFOX.browserName(),
 			Browser.EDGE.browserName());
+
+	// Browsers que suportam emulação mobile via MobileOptions.
+	private static final List<String> MOBILE_SUPPORTED_BROWSERS = Arrays.asList(
+			Browser.CHROME.browserName(),
+			Browser.FIREFOX.browserName());
 	
 	public WebDriver createDriver(MobileOptions options) {
-	
-		verifyBrowserName(options.getBrowserName());
+
+		verifyMobileBrowserName(options.getBrowserName());
 
 		if (Browser.FIREFOX.browserName().equalsIgnoreCase(options.getBrowserName())) {
 			return new DriverFirefoxFactory().createDriver(options);
@@ -36,16 +42,26 @@ public class DriverBuilder {
 			return new DriverChromeFactory().createDriver(options);
 		}
 
-		throw new DriverOptionsException("Not implemented: " + options.getBrowserName());
+		throw new DriverOptionsException("Mobile emulation not supported for: " + options.getBrowserName());
 	}
 
 	protected void verifyBrowserName(String browserName) {
 		if (StringUtils.isEmpty(browserName)) {
 			throw new DriverOptionsException("browserName is required.");
 		}
-		
-		if(!SUPPORTED_BROWSERS.contains(browserName)) {
-			throw new DriverOptionsException("browser not supported.");
+		if (!SUPPORTED_BROWSERS.contains(browserName)) {
+			throw new DriverOptionsException("Browser not supported: " + browserName
+					+ ". Supported browsers: " + SUPPORTED_BROWSERS);
+		}
+	}
+
+	protected void verifyMobileBrowserName(String browserName) {
+		if (StringUtils.isEmpty(browserName)) {
+			throw new DriverOptionsException("browserName is required.");
+		}
+		if (!MOBILE_SUPPORTED_BROWSERS.contains(browserName)) {
+			throw new DriverOptionsException("Mobile emulation not supported for: " + browserName
+					+ ". Mobile-supported browsers: " + MOBILE_SUPPORTED_BROWSERS);
 		}
 	}
 
