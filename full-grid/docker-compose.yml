@@ -133,6 +133,12 @@ services:
     extends:
       file: ../docker-compose-shared-calculator.yml
       service: calculator
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   maven:
     extends:
@@ -143,7 +149,7 @@ services:
       router:
         condition: service_healthy
       calculator:
-        condition: service_started
+        condition: service_healthy
 
 volumes:
   m2_repository:
