@@ -7,11 +7,18 @@ services:
       - "4442:4442"
       - "4443:4443"
       - "${SELENIUM_PORT}:4444"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/status"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
 
   firefox:
     image: selenium/node-firefox:4.18.1
     depends_on:
-      - hub
+      hub:
+        condition: service_healthy
     env_file:
       - .env
     ports:
@@ -20,18 +27,20 @@ services:
   edge:
     image: selenium/node-edge:4.18.1
     depends_on:
-      - hub
+      hub:
+        condition: service_healthy
     env_file:
       - .env
     ports:
       - "${EDGE_VNC_PORT}:5900"
-  
+
   chrome:
     extends:
       file: ../docker-compose-shared-chrome.yml
       service: shared-chrome
     depends_on:
-      - hub
+      hub:
+        condition: service_healthy
     ports:
       - "${CHROME_VNC_PORT}:5900"
     env_file:
@@ -45,7 +54,8 @@ services:
       file: ../docker-compose-shared-chrome.yml
       service: shared-chrome
     depends_on:
-      - hub
+      hub:
+        condition: service_healthy
     ports:
       - ${CHROME_1024x768_VNC_PORT}:5900
     environment:
@@ -54,19 +64,24 @@ services:
       NODE_APPLICATION_NAME: chrome-1024x768
     env_file:
       - .env
+
   calculator:
     extends:
       file: ../docker-compose-shared-calculator.yml
       service: calculator
+
   maven:
     extends:
       file: ../docker-compose-shared-calculator.yml
       service: maven
-    command: bash -c " sh /scripts/run_calculator_test.sh"  
+    command: bash -c "sh /scripts/run_calculator_test.sh"
     depends_on:
-     - calculator    
-      
+      hub:
+        condition: service_healthy
+      calculator:
+        condition: service_started
+
 volumes:
-  m2_repository:  
-    name: m2_repository  
+  m2_repository:
+    name: m2_repository
     external: true

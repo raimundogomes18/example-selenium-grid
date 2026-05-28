@@ -8,6 +8,12 @@ services:
     ports:
       - ${SELENIUM_PORT}:4444
       - ${NO_VNC_PORT}:7900
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/status"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
   calculator:
     extends:
       file: ../docker-compose-shared-calculator.yml
@@ -19,7 +25,10 @@ services:
     environment:
      DEFAULT_BROWSER: "chrome"
     depends_on:
-     - calculator   
+      browser:
+        condition: service_healthy
+      calculator:
+        condition: service_started   
 volumes:
   m2_repository:  
     name: m2_repository

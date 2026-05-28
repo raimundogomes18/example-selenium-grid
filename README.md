@@ -153,9 +153,12 @@ Faça o clone do projeto em [https://github.com/raimundogomes18/example-selenium
 Abra um prompt de comando (todos os comandos listados neste projeto foram feitos usando git bash) 
 
 Em todos os exemplos foi adicionado o uso de um [volume externo](https://docs.docker.com/storage/volumes/#use-a-volume-with-docker-compose) para servir de cache das dependências do maven.
-Então crie o volume  m2_repository com o comando abaixo:
-```
- docker volume create m2_repository
+
+> ⚠️ **Passo obrigatório antes de qualquer execução.**
+> Crie o volume externo `m2_repository` uma única vez na sua máquina. Sem ele, o `docker-compose up` falhará com o erro `external volume "m2_repository" not found`.
+
+```bash
+docker volume create m2_repository
 ```
 
 ### Execução dos testes via Maven
@@ -317,6 +320,12 @@ As configurações principais ficam nos arquivos `configuration.properties`:
 As variáveis de ambiente sobrescrevem as propriedades do arquivo. Por exemplo, `REMOTE_URL` sobrescreve `remote.url`, e `DEFAULT_BROWSER` sobrescreve `default.browser`.
 
 
+
+# Implantação em Kubernetes
+
+Para ambientes corporativos que utilizam Kubernetes, consulte o guia completo de migração:
+
+📄 [KUBERNETES.md](KUBERNETES.md) — Contém manifestos prontos para todos os componentes do Selenium Grid (Deployment, Service, ConfigMap, HPA, Ingress), instruções de escalonamento automático com KEDA, integração com observabilidade via OpenTelemetry e boas práticas para ambientes corporativos.
 
 # Referências
 

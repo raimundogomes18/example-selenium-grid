@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.openqa.selenium.remote.AbstractDriverOptions;
 
 import core.drivers.DriverOptionsException;
 
@@ -35,6 +36,7 @@ class DriverOperaFactoryTest {
 
 	@Test
 	void testCreateDriverWithOptionsThrowsUnsupported() {
-		assertThrows(DriverOptionsException.class, () -> driverFactory.createDriver(null));
+		assertThrows(DriverOptionsException.class,
+				() -> driverFactory.createDriver((AbstractDriverOptions<?>) null));
 	}
 }

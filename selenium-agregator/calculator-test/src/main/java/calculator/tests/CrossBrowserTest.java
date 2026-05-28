@@ -10,7 +10,6 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.remote.CapabilityType;
 
 import calculator.pageobjects.CalculatorPageObject;
 
@@ -33,7 +32,7 @@ class CrossBrowserTest  {
 	void chrome1024x768Test() {
 		logger.info("Start of test in  Chrome-1024x768");
 		ChromeOptions options = new ChromeOptions();
-		options.setCapability(CapabilityType.APPLICATION_NAME, "chrome-1024x768");
+		options.setCapability("se:applicationName", "chrome-1024x768");
 		CalculatorPageObject calculator = new CalculatorPageObject(options);
 
 		calculatorBaseTest.calculatorTest(calculator);

@@ -1,25 +1,29 @@
 #!/bin/bash
 
-elapsed_time=0
-
-TIMEOUT_TRYS=$((10*1))
-
 url=$1
 
-for i in $(eval echo "{1..$TIMEOUT_TRYS}")
-do
+# Timeout configuravel via variavel de ambiente (padrao: 300 segundos)
+WAIT_TIMEOUT_SECONDS=${WAIT_TIMEOUT_SECONDS:-300}
+INTERVAL=10
+MAX_RETRIES=$(( WAIT_TIMEOUT_SECONDS / INTERVAL ))
+
+elapsed=0
+
+echo "Aguardando servico: $url (timeout: ${WAIT_TIMEOUT_SECONDS}s)"
+
+for i in $(seq 1 $MAX_RETRIES); do
     code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
-    if [ "$code" == 200 ]; then
-       echo  -e "\n Service $url started successfully!"
-       exit 0
-    else
-        sleep 10
+    if [ "$code" == "200" ]; then
+        echo ""
+        echo " Servico $url disponivel apos ${elapsed}s."
+        exit 0
+    fi
 
-        let "elapsed_time+=10"
-
-        echo -n "...$elapsed_time seg"
-    fi    
+    sleep $INTERVAL
+    elapsed=$(( elapsed + INTERVAL ))
+    echo -n "...${elapsed}s"
 done
 
-echo -e "### [Erro] Service $url started with failure"
+echo ""
+echo "### [ERRO] Servico $url nao respondeu apos ${WAIT_TIMEOUT_SECONDS}s."
 exit 1
